@@ -1,4 +1,5 @@
 import React from 'react';
+import { APP_VERSION } from '../version';
 import {
   Play,
   Pause,
@@ -73,7 +74,7 @@ export const Header: React.FC<HeaderProps> = ({
               RAT<span className="font-bold text-indigo-400">DOKU</span>
             </h1>
             <p className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-medium leading-none mt-1">
-              ver 1.01 by MrRat.com
+              ver {APP_VERSION} by MrRat.com
             </p>
           </div>
         </div>

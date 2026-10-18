@@ -1,4 +1,5 @@
 import React from 'react';
+import { APP_VERSION } from '../version';
 import { X, Volume2, Sparkles, Eye, ShieldAlert, Palette, Check } from 'lucide-react';
 import { GameSettings, ThemeMode } from '../types';
 import { THEMES, ThemeStyles } from '../utils/theme';
@@ -220,7 +221,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </button>
 
         <p className="text-center text-[10px] text-neutral-400 dark:text-neutral-500 font-medium">
-          RatDoku • ver 1.01 by MrRat.com
+          RatDoku • ver {APP_VERSION} by MrRat.com
         </p>
       </div>
     </div>

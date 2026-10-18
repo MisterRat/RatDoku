@@ -11,7 +11,6 @@ import {
   SavedGameState,
 } from './types';
 import {
-  generateSudokuPuzzle,
   findSmartHint,
   isValidPlacement,
 } from './utils/sudokuGenerator';
@@ -27,6 +26,7 @@ import {
   DEFAULT_SETTINGS,
 } from './utils/storage';
 import { THEMES } from './utils/theme';
+import { generatePuzzleAsync, warmUpPuzzleWorker } from './utils/puzzleWorkerClient';
 import { soundManager } from './utils/sound';
 import { Header } from './components/Header';
 import { SudokuGrid } from './components/SudokuGrid';
@@ -75,6 +75,10 @@ export default function App() {
   const [showGameOverModal, setShowGameOverModal] = useState<boolean>(false);
   const [isNewBestTime, setIsNewBestTime] = useState<boolean>(false);
 
+  // Puzzle generation runs in a Web Worker; only the newest request is applied.
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const generationRequestRef = useRef(0);
+
   // Sync sound manager with settings
   useEffect(() => {
     soundManager.setEnabled(settings.soundEnabled);
@@ -95,7 +99,7 @@ export default function App() {
     );
   }, []);
 
-  // Start a fresh new game
+  // Start a fresh new game (puzzle is generated off the main thread)
   const startNewGame = useCallback(
     (
       targetDifficulty: Difficulty = difficulty,
@@ -104,39 +108,49 @@ export default function App() {
       startPaused: boolean = false
     ) => {
       const dKey = targetDateKey || (targetMode === 'daily' ? getTodayDateKey() : undefined);
-      const newPuzzle = generateSudokuPuzzle(targetDifficulty, targetMode, dKey);
-      const newBoard = createBoardFromPuzzle(newPuzzle);
+      const requestId = ++generationRequestRef.current;
 
       setDifficulty(targetDifficulty);
       setMode(targetMode);
       if (dKey) setDateKey(dKey);
-      setPuzzle(newPuzzle);
-      setBoard(newBoard);
-      setSelectedCell(null);
-      setHighlightedNumber(null);
-      setHistory([]);
-      setTimerSeconds(0);
-      setIsPaused(startPaused);
-      setIsCompleted(false);
-      setMistakesCount(0);
-      setHintsCount(0);
+      setIsGenerating(true);
+      setIsPaused(true); // stop the old timer and block input until the new board arrives
       setActiveHint(null);
       setShowVictoryModal(false);
       setShowGameOverModal(false);
-      setIsNewBestTime(false);
 
-      // Save new active state
-      saveActiveGame({
-        puzzle: newPuzzle,
-        board: newBoard,
-        timerSeconds: 0,
-        isPaused: startPaused,
-        isComplete: false,
-        mistakesCount: 0,
-        hintsCount: 0,
-        difficulty: targetDifficulty,
-        mode: targetMode,
-        dateKey: dKey,
+      generatePuzzleAsync(targetDifficulty, targetMode, dKey).then((newPuzzle) => {
+        // A newer request superseded this one (e.g. the player tapped another difficulty).
+        if (requestId !== generationRequestRef.current) return;
+
+        const newBoard = createBoardFromPuzzle(newPuzzle);
+        setPuzzle(newPuzzle);
+        setBoard(newBoard);
+        setSelectedCell(null);
+        setHighlightedNumber(null);
+        setHistory([]);
+        setTimerSeconds(0);
+        setIsPaused(startPaused);
+        setIsCompleted(false);
+        setMistakesCount(0);
+        setHintsCount(0);
+        setActiveHint(null);
+        setIsNewBestTime(false);
+        setIsGenerating(false);
+
+        // Save new active state
+        saveActiveGame({
+          puzzle: newPuzzle,
+          board: newBoard,
+          timerSeconds: 0,
+          isPaused: startPaused,
+          isComplete: false,
+          mistakesCount: 0,
+          hintsCount: 0,
+          difficulty: targetDifficulty,
+          mode: targetMode,
+          dateKey: dKey,
+        });
       });
     },
     [createBoardFromPuzzle, difficulty, mode]
@@ -144,7 +158,7 @@ export default function App() {
 
   // Restart current board
   const restartCurrentBoard = useCallback(() => {
-    if (!puzzle) return;
+    if (!puzzle || isGenerating) return;
     const resetBoard = createBoardFromPuzzle(puzzle);
     setBoard(resetBoard);
     setSelectedCell(null);
@@ -158,10 +172,11 @@ export default function App() {
     setActiveHint(null);
     setShowVictoryModal(false);
     setShowGameOverModal(false);
-  }, [createBoardFromPuzzle, puzzle]);
+  }, [createBoardFromPuzzle, puzzle, isGenerating]);
 
   // Initial load: restore saved active game or generate fresh game (always loads paused in daily mode)
   useEffect(() => {
+    warmUpPuzzleWorker();
     const saved = loadSavedGame();
     if (saved && saved.puzzle && saved.board && !saved.isComplete) {
       setPuzzle(saved.puzzle);
@@ -212,6 +227,7 @@ export default function App() {
 
   // Cell selection handler
   const handleSelectCell = (r: number, c: number) => {
+    if (isGenerating) return;
     if (isPaused) {
       setIsPaused(false);
     }
@@ -635,6 +651,9 @@ export default function App() {
         return;
       }
 
+      // Ignore game keys while a new puzzle is being built
+      if (isGenerating) return;
+
       // Close modal on Escape
       if (e.key === 'Escape') {
         if (activeHint) setActiveHint(null);
@@ -711,7 +730,7 @@ export default function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleNumberInput, handleErase, handleUndo, handleTriggerHint, activeHint, showDailyModal, showStatsModal, showSettingsModal, board]);
+  }, [handleNumberInput, handleErase, handleUndo, handleTriggerHint, activeHint, showDailyModal, showStatsModal, showSettingsModal, board, isGenerating]);
 
   return (
     <div
@@ -741,7 +760,9 @@ export default function App() {
         onRestartCurrentGame={restartCurrentBoard}
         timerSeconds={timerSeconds}
         isPaused={isPaused}
-        onTogglePause={() => setIsPaused((prev) => !prev)}
+        onTogglePause={() => {
+          if (!isGenerating) setIsPaused((prev) => !prev);
+        }}
         mistakesCount={mistakesCount}
         errorLimit={settings.errorLimit}
         dailyStreak={stats.dailyStreak}
@@ -781,7 +802,10 @@ export default function App() {
           activeHint={activeHint}
           theme={theme}
           isPaused={isPaused}
-          onResume={() => setIsPaused(false)}
+          isGenerating={isGenerating}
+          onResume={() => {
+            if (!isGenerating) setIsPaused(false);
+          }}
           highlightPeers={settings.highlightPeers}
           highlightMatchingNumbers={settings.highlightMatchingNumbers}
           highlightDuplicates={settings.highlightDuplicates}
