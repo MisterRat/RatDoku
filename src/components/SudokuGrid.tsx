@@ -10,6 +10,7 @@ interface SudokuGridProps {
   activeHint: HintInfo | null;
   theme: ThemeStyles;
   isPaused: boolean;
+  isGenerating?: boolean;
   onResume: () => void;
   highlightPeers: boolean;
   highlightMatchingNumbers: boolean;
@@ -24,6 +25,7 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
   activeHint,
   theme,
   isPaused,
+  isGenerating = false,
   onResume,
   highlightPeers,
   highlightMatchingNumbers,
@@ -157,8 +159,21 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
         )}
       </div>
 
+      {/* New-puzzle Overlay */}
+      {isGenerating && (
+        <div
+          id="sudoku-generating-overlay"
+          role="status"
+          aria-live="polite"
+          className="absolute inset-0 m-1 sm:m-2 bg-neutral-900/70 backdrop-blur-md rounded-xl flex flex-col items-center justify-center text-white z-40"
+        >
+          <div className="w-10 h-10 rounded-full border-4 border-white/20 border-t-white animate-spin" />
+          <p className="text-sm text-neutral-200 mt-3">Building your puzzle…</p>
+        </div>
+      )}
+
       {/* Pause Overlay */}
-      {isPaused && (
+      {isPaused && !isGenerating && (
         <div
           id="sudoku-pause-overlay"
           className="absolute inset-0 m-1 sm:m-2 bg-neutral-900/70 backdrop-blur-md rounded-xl flex flex-col items-center justify-center text-white z-30 transition-all duration-200"

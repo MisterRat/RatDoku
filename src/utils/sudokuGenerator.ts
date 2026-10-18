@@ -487,14 +487,20 @@ export function findSmartHint(
     for (let c = 0; c < 9; c++) {
       const val = currentGrid[r][c];
       if (val !== 0 && val !== solutionGrid[r][c]) {
+        // Test the entry against its peers with the cell itself cleared.
+        const withoutEntry = currentGrid.map((rowArr) => [...rowArr]);
+        withoutEntry[r][c] = 0;
+        const breaksRule = !isValidPlacement(withoutEntry, r, c, val);
         return {
           type: 'rule_elimination',
           row: r,
           col: c,
           suggestedValue: solutionGrid[r][c],
-          title: 'Conflict Detected',
-          explanation: `The entry at Row ${r + 1}, Column ${c + 1} conflicts with other cells on the board or its surrounding box. Clearing this square will unlock the logical path.`,
-          technique: 'Conflict Resolution',
+          title: breaksRule ? 'Conflict Detected' : 'Incorrect Entry',
+          explanation: breaksRule
+            ? `The ${val} at Row ${r + 1}, Column ${c + 1} repeats a number already in its row, column or box. Clearing this square will unlock the logical path.`
+            : `The ${val} at Row ${r + 1}, Column ${c + 1} doesn't break any rule yet, but it isn't part of this puzzle's solution and will cause a contradiction later. Clearing this square will unlock the logical path.`,
+          technique: breaksRule ? 'Conflict Resolution' : 'Error Check',
           highlights: [{ row: r, col: c, type: 'target' }],
         };
       }

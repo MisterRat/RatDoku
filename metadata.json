@@ -1,6 +1,0 @@
-{
-  "name": "Sudoku",
-  "description": "A clean, minimalist Sudoku game featuring daily challenges, multiple difficulty levels, smart hints, and performance tracking.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

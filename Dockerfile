@@ -8,8 +8,8 @@ WORKDIR /app
 # Copy package descriptors
 COPY package*.json ./
 
-# Install all dependencies cleanly
-RUN npm install
+# Install the exact dependency versions from package-lock.json
+RUN npm ci --no-audit --no-fund
 
 # Copy source code and configuration
 COPY . .
