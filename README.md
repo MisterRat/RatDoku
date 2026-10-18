@@ -13,44 +13,36 @@ A sleek, high-performance Sudoku game and Progressive Web App (PWA) by **MrRat.c
 
 ---
 
-## Deploying via Portainer Stack (From GitHub Repository)
+## Deploying with Portainer (from GitHub)
 
-This repository is pre-configured for direct deployment through Portainer:
+GitHub builds RatDoku into a ready-made Docker image every time `main` changes and publishes it at `ghcr.io/misterrat/ratdoku`. Portainer just downloads that image and starts it, so nothing is built on your server and no files need to be copied or edited.
 
-### Step 1: Create a Stack in Portainer
-1. Open your Portainer Web UI.
-2. Navigate to **Stacks** > **Add stack**.
-3. Select the **Repository** build method.
-4. Enter the stack name (e.g., `sudoku`).
+### Create the stack
+1. Open Portainer and select your environment.
+2. Click **Stacks** in the left sidebar, then **+ Add stack**.
+3. **Name**: `ratdoku` (lowercase).
+4. **Build method**: choose **Repository**.
+5. **Repository URL**: `https://github.com/MisterRat/RatDoku`
+6. **Repository reference**: `refs/heads/main`
+7. **Compose path**: `docker-compose.yml`
+8. Optional: under **Environment variables**, add `PORT` to use a port other than the default `3030`.
+9. Click **Deploy the stack**, then open `http://<your-server-ip>:3030`.
 
-### Step 2: Configure Repository Settings
-- **Repository URL**: `https://github.com/MisterRat/RatDoku`
-- **Repository reference**: `refs/heads/main` (or your preferred branch)
-- **Compose path**: `docker-compose.yml`
+### Updating to a new version
+Open the stack in Portainer, click **Pull and redeploy**, and make sure **Re-pull image** is switched on. Portainer downloads the newest image that GitHub built from `main`.
 
-### Step 3: Environment Variables (Optional)
-You can optionally define the `PORT` variable in the Portainer Environment variables section:
-- `PORT=3333` (the default; set any external port you want to bind)
+### Where game data is kept
+RatDoku has no server-side data. Saved games, settings, stats and streaks are stored in each player's browser for the address they use, so redeploying or updating the container never touches them. Keep the same address and port to keep players' progress.
 
-### Step 4: Deploy
-Click **Deploy the stack**. Portainer will clone the repository, run the multi-stage Docker build, and start the Nginx container serving the PWA on the configured port.
-
----
-
-## Deploying with Docker Compose Locally / On a VPS
-
-To run the application with Docker Compose:
-
+### Alternative: Docker Compose from the command line
 ```bash
-# Clone the repository
 git clone https://github.com/MisterRat/RatDoku.git
 cd RatDoku
-
-# Start the stack in background
-docker compose up -d --build
+docker compose up -d                                        # use the published image
+docker compose -f docker-compose.build.yml up -d --build    # or build it yourself
 ```
 
-Access the app in your browser at `http://localhost:3333` (or the `PORT` you set).
+Then open `http://localhost:3030` (or the `PORT` you set).
 
 ---
 

@@ -1,23 +1,20 @@
-version: '3.8'
-
+# Push-button deploy: in Portainer, add a stack with Build method "Repository",
+# point it at this repo, compose path docker-compose.yml. The image is built by
+# GitHub Actions on every push to main and published to ghcr.io, so Portainer
+# only pulls it (no build on the server). RatDoku has no server-side settings:
+# game progress and stats live in each player's browser.
+# To build locally instead: docker compose -f docker-compose.build.yml up -d --build
 services:
-  sudoku:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: sudoku-pwa:latest
-    container_name: sudoku-app
+  ratdoku:
+    image: ghcr.io/misterrat/ratdoku:latest
+    pull_policy: always
+    container_name: ratdoku
     restart: unless-stopped
     ports:
       - "${PORT:-3030}:80"
-    environment:
-      - NODE_ENV=production
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost/healthz || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 5s
-    labels:
-      - "com.docker.compose.project=sudoku"
-      - "com.portainer.stack.name=sudoku-pwa"
