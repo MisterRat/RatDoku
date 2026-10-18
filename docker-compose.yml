@@ -9,7 +9,7 @@ services:
     container_name: sudoku-app
     restart: unless-stopped
     ports:
-      - "${PORT:-3333}:80"
+      - "${PORT:-3030}:80"
     environment:
       - NODE_ENV=production
     healthcheck:
