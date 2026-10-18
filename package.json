@@ -28,5 +28,6 @@
     "vite": "^6.2.3",
     "vitest": "^3.2.7"
   },
-  "description": "RatDoku: an offline-first Sudoku PWA by MrRat.com"
+  "description": "RatDoku: an offline-first Sudoku PWA by MrRat.com",
+  "license": "MIT"
 }

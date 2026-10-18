@@ -82,3 +82,9 @@ Every push and pull request runs the type-check and tests. The container image i
 ### Daily puzzles
 
 Daily challenges are generated from a seed made from the date and difficulty, so every player gets the same grid. A test pins the output for a fixed date; if a generator change makes it fail, that change would alter everyone's past and future daily puzzles.
+
+---
+
+## License
+
+RatDoku is released under the [MIT License](LICENSE).
