@@ -1,0 +1,13 @@
+# Same as docker-compose.yml, but builds the image from this folder instead of
+# pulling the published one. Use from the command line:
+#   docker compose -f docker-compose.build.yml up -d --build
+services:
+  ratdoku:
+    extends:
+      file: docker-compose.yml
+      service: ratdoku
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ratdoku:local
+    pull_policy: build
