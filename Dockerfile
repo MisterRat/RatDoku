@@ -29,7 +29,8 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
 
 # Expose HTTP port
 EXPOSE 80
