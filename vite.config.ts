@@ -9,6 +9,9 @@ const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 
 
 export default defineConfig(() => {
   return {
+    // Relative base so the same build works at the site root (Docker)
+    // and under a sub-path such as /RatDoku/ (GitHub Pages).
+    base: './',
     plugins: [react(), tailwindcss()],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
