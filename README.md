@@ -15,6 +15,12 @@ A sleek, high-performance Sudoku game and Progressive Web App (PWA) by **MrRat.c
 
 ---
 
+## Playing on GitHub Pages
+
+Every push to `main` also builds RatDoku and publishes it to GitHub Pages at **https://github.mrrat.org/RatDoku/** (workflow: `.github/workflows/pages.yml`). The build uses relative paths, so the same output works at a site root (Docker) or under `/RatDoku/` (Pages). One-time setup: in the repo's **Settings → Pages**, set **Source** to **GitHub Actions**.
+
+---
+
 ## Deploying with Portainer (from GitHub)
 
 GitHub builds RatDoku into a ready-made Docker image every time `main` changes and publishes it at `ghcr.io/misterrat/ratdoku`. Portainer just downloads that image and starts it, so nothing is built on your server and no files need to be copied or edited.

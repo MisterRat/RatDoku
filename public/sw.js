@@ -1,18 +1,23 @@
 // Service Worker for RatDoku PWA (Sudoku by MrRat.com)
-const CACHE_NAME = 'ratdoku-v2';
+const CACHE_NAME = 'ratdoku-v3';
+
+// Resolve app paths against the service worker's own folder, so the app works
+// both at the site root (Docker) and under a sub-path (GitHub Pages /RatDoku/).
+const BASE = new URL('./', self.location).href;
+const at = (path) => new URL(path, BASE).href;
 
 // Essential static assets to pre-cache on install
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/manifest.json',
-  '/favicon.svg',
-  '/apple-touch-icon.png',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/icon-maskable-512.png',
-  '/icons/apple-touch-icon.png'
+  at(''),
+  at('index.html'),
+  at('manifest.webmanifest'),
+  at('manifest.json'),
+  at('favicon.svg'),
+  at('apple-touch-icon.png'),
+  at('icons/icon-192.png'),
+  at('icons/icon-512.png'),
+  at('icons/icon-maskable-512.png'),
+  at('icons/apple-touch-icon.png')
 ];
 
 // Install Event: Cache app shell assets safely
@@ -70,8 +75,8 @@ self.addEventListener('fetch', (event) => {
             const responseToCache = networkResponse.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(request, responseToCache);
-              cache.put('/index.html', responseToCache.clone());
-              cache.put('/', responseToCache.clone());
+              cache.put(at('index.html'), responseToCache.clone());
+              cache.put(at(''), responseToCache.clone());
             });
           }
           return networkResponse;
@@ -79,9 +84,9 @@ self.addEventListener('fetch', (event) => {
         .catch(async () => {
           const cached = await caches.match(request);
           if (cached) return cached;
-          const cachedIndex = await caches.match('/index.html');
+          const cachedIndex = await caches.match(at('index.html'));
           if (cachedIndex) return cachedIndex;
-          const cachedRoot = await caches.match('/');
+          const cachedRoot = await caches.match(at(''));
           if (cachedRoot) return cachedRoot;
           return new Response('Offline - RatDoku is ready to play once loaded.', {
             status: 503,
@@ -119,7 +124,7 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           // If offline and request is an image, provide fallback favicon if available
           if (request.destination === 'image') {
-            return caches.match('/favicon.svg');
+            return caches.match(at('favicon.svg'));
           }
           return new Response('Offline asset unavailable', {
             status: 503,
