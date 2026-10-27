@@ -2,6 +2,10 @@
 
 A sleek, high-performance Sudoku game and Progressive Web App (PWA) by **MrRat.com** with daily challenges, multiple difficulty levels, logical smart hints, offline support, and statistics tracking.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="RatDoku mid-game: a Medium puzzle with pencil notes in some cells and every 6 highlighted" width="420">
+</p>
+
 ## Features
 
 - **Progressive Web App (PWA)**: Installable on iOS, Android, macOS, Windows, and Linux with full offline gameplay support.
