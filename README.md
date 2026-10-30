@@ -1,6 +1,6 @@
 <div align="center">
   
-# RatDoku — Sudoku by MrRat.com (PWA)
+# RatDoku
 
 A sleek, high-performance Sudoku game and Progressive Web App (PWA) by **MrRat.com** with daily challenges, multiple difficulty levels, logical smart hints, offline support, and statistics tracking.
 
