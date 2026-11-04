@@ -1,6 +1,7 @@
 import type { Difficulty, GameMode, SudokuPuzzle } from '../types';
 import { generateSudokuPuzzle } from './sudokuGenerator';
 import type { PuzzleRequest } from './puzzle.worker';
+import { createPuzzleWorker } from './createPuzzleWorker';
 
 type Pending = {
   resolve: (p: SudokuPuzzle) => void;
@@ -25,7 +26,7 @@ function getWorker(): Worker | null {
   if (workerBroken || typeof Worker === 'undefined') return null;
   if (worker) return worker;
   try {
-    worker = new Worker(new URL('./puzzle.worker.ts', import.meta.url), { type: 'module' });
+    worker = createPuzzleWorker();
     worker.onmessage = (event: MessageEvent<{ id: number; puzzle?: SudokuPuzzle; error?: string }>) => {
       const entry = pending.get(event.data.id);
       if (!entry) return;

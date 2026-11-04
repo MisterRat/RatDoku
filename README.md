@@ -28,6 +28,10 @@ by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://di
 
 Every push to `main` also builds RatDoku and publishes it to GitHub Pages at **https://github.mrrat.org/RatDoku/** (workflow: `.github/workflows/pages.yml`). The build uses relative paths, so the same output works at a site root (Docker) or under `/RatDoku/` (Pages). One-time setup: in the repo's **Settings → Pages**, set **Source** to **GitHub Actions**.
 
+### Standalone single-file version
+
+Every build also makes **`RatDoku.html`**: the whole game in one HTML file that can be saved and opened straight from disk, with no internet needed. Download it from **https://github.mrrat.org/RatDoku/RatDoku.html** (right-click → Save link as…), or find it in `dist/` after `npm run build`. It plays fully, including daily puzzles, hints and every language. It can't be installed as an app, and its saved games and stats are kept separately from the website's. Offline, it uses the device's own fonts.
+
 ---
 
 ## Deploying with Portainer (from GitHub)
