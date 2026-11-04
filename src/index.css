@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* RatDoku.html is the built standalone game; scanning it would make each build depend on the last. */
+@source not "../RatDoku.html";
 
 @layer base {
   body {

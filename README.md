@@ -30,7 +30,7 @@ Every push to `main` also builds RatDoku and publishes it to GitHub Pages at **h
 
 ### Standalone single-file version
 
-Every build also makes **`RatDoku.html`**: the whole game in one HTML file that can be saved and opened straight from disk, with no internet needed. Download it from **https://github.mrrat.org/RatDoku/RatDoku.html** (right-click → Save link as…), or find it in `dist/` after `npm run build`. It plays fully, including daily puzzles, hints and every language. It can't be installed as an app, and its saved games and stats are kept separately from the website's. Offline, it uses the device's own fonts.
+Every build also makes **`RatDoku.html`**: the whole game in one HTML file that can be saved and opened straight from disk, with no internet needed. Get it from **[RatDoku.html](RatDoku.html)** in this repository (open it, then use **Download raw file**). It is not part of the website. `npm run build` refreshes it, so commit `RatDoku.html` along with any code change. It plays fully, including daily puzzles, hints and every language. It can't be installed as an app, and its saved games and stats are kept separately from the website's. Offline, it uses the device's own fonts.
 
 ---
 
