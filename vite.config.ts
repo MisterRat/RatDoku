@@ -10,7 +10,7 @@ import {defineConfig} from 'vitest/config';
 const pkg = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
 /**
- * Extra settings for `vite build --mode singlefile`, which makes dist/RatDoku.html:
+ * Extra settings for `vite build --mode singlefile`, which makes RatDoku.html (repository root):
  * the whole game (code, styles, puzzle generator, favicon) inside one HTML file that
  * can be saved and opened offline. Runs after the normal build as part of `npm run build`.
  */
@@ -29,10 +29,8 @@ function standaloneHtml(): Plugin {
         .replace(/\s*<link rel="manifest"[^>]*>/, '');
     },
     closeBundle() {
-      // Publish it next to the website build (dist/RatDoku.html, served on GitHub Pages)
-      // and refresh the copy kept in the repository root (RatDoku.html), which is
-      // committed with every change so it can be downloaded straight from GitHub.
-      copyFileSync('dist-single/index.html', 'dist/RatDoku.html');
+      // Refresh the copy kept in the repository root (RatDoku.html). It is committed with
+      // every change so it can be downloaded straight from GitHub; it is not part of the website.
       copyFileSync('dist-single/index.html', 'RatDoku.html');
       rmSync('dist-single', {recursive: true, force: true});
     },
