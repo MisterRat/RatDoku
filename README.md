@@ -17,7 +17,7 @@ by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://di
 - **Progressive Web App (PWA)**: Installable on iOS, Android, macOS, Windows, and Linux with full offline gameplay support.
 - **Game Modes**: Classic mode (Easy, Medium, Hard) and Daily Challenges with calendar history and streak tracking.
 - **Smart Hint System**: Step-by-step logical hints (Naked Singles, Hidden Singles, Block Intersections, Naked Pairs, and more) with visual explanations.
-- **Languages**: English, Español, Simplified Chinese (中文) and Mandarin in Pīnyīn, chosen from the dropdown under Settings. By default the game follows the device language (Spanish phones get Español, Chinese phones get 中文).
+- **Languages**: English, Español, Français, Deutsch, 日本語, 한국어, 简体中文, 繁體中文 and Mandarin in Pīnyīn, chosen from the dropdown under Settings. By default the game follows the device language (for example, Japanese phones get 日本語, and Taiwan and Hong Kong phones get 繁體中文).
 - **Customizable Themes**: Elegant Dark (obsidian), Minimal Light, Warm Paper, Dark Slate, and Nordic Forest.
 - **Rich Gameplay Controls**: Undo, candidate pencil notes, auto-error checking, matching number highlights, peer highlights, sound effects, and timer controls.
 - **100% Client-Side & Offline-First**: No external API or cloud dependency required. All game state and daily puzzles are generated and cached locally in the browser.
@@ -86,7 +86,7 @@ npm run build
 
 ### Versioning
 
-The version shown in the app header and settings comes from `version` in `package.json`. To release, bump it there (for example `npm version minor`), push the commit, and push a matching `vX.Y.Z` tag so the workflow also publishes a versioned image.
+The version shown in the app header and settings comes from `version` in `package.json`. It has two parts, `MAJOR.MINOR` (for example `1.3`): the major number is set by hand, and the minor number goes up with every push. To also publish a versioned Docker image, push a matching tag such as `v1.3`.
 
 ### Continuous integration
 
