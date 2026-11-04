@@ -20,7 +20,7 @@ by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://di
 - **Languages**: English, Español, Français, Deutsch, 日本語, 한국어, 简体中文, 繁體中文 and Mandarin in Pīnyīn, chosen from the dropdown under Settings. By default the game follows the device language (for example, Japanese phones get 日本語, and Taiwan and Hong Kong phones get 繁體中文).
 - **Customizable Themes**: Elegant Dark (obsidian), Minimal Light, Warm Paper, Dark Slate, and Nordic Forest.
 - **Rich Gameplay Controls**: Undo, candidate pencil notes, auto-error checking, matching number highlights, peer highlights, sound effects, and timer controls.
-- **100% Client-Side & Offline-First**: No external API or cloud dependency required. All game state and daily puzzles are generated and cached locally in the browser.
+- **100% Client-Side & Offline-First**: No external API, fonts or cloud dependency. After the first visit the whole game is saved on the device and starts from there instantly, even with no connection or a filtered one (such as in mainland China); updates download in the background when a connection is available. All game state and daily puzzles stay in the browser.
 
 ---
 

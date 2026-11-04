@@ -1,39 +1,45 @@
 // Service Worker for RatDoku PWA (Sudoku by MrRat.com)
-const CACHE_NAME = 'ratdoku-v3';
+//
+// Offline-first: once RatDoku has been opened one time, it never needs the internet again.
+// Everything is served from the cache straight away, so the game starts instantly even on a
+// slow, filtered or missing connection. When a connection happens to be available, a new
+// version downloads quietly in the background and is used from the next launch.
+
+// Filled in at build time (see vite.config.ts): every file of this build, and a cache name
+// that changes with each build so old files are cleaned up.
+const BUILD = /*__RATDOKU_BUILD__*/ { cache: 'ratdoku-dev', files: [] };
 
 // Resolve app paths against the service worker's own folder, so the app works
 // both at the site root (Docker) and under a sub-path (GitHub Pages /RatDoku/).
 const BASE = new URL('./', self.location).href;
 const at = (path) => new URL(path, BASE).href;
+const INDEX = at('index.html');
 
-// Essential static assets to pre-cache on install
-const PRECACHE_ASSETS = [
-  at(''),
-  at('index.html'),
-  at('manifest.webmanifest'),
-  at('manifest.json'),
-  at('favicon.svg'),
-  at('apple-touch-icon.png'),
-  at('icons/icon-192.png'),
-  at('icons/icon-512.png'),
-  at('icons/icon-maskable-512.png'),
-  at('icons/apple-touch-icon.png')
+const SHELL = [
+  '',
+  'index.html',
+  'manifest.webmanifest',
+  'manifest.json',
+  'favicon.svg',
+  'apple-touch-icon.png',
+  'icons/icon-192.png',
+  'icons/icon-512.png',
+  'icons/icon-maskable-512.png',
+  'icons/apple-touch-icon.png',
 ];
 
-// Install Event: Cache app shell assets safely
+// Install: download the whole game (page, code, styles, fonts, puzzle generator, icons).
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      // Use map with individual catches to prevent a single 404 from aborting installation
+    caches.open(BUILD.cache).then(async (cache) => {
+      const urls = [...new Set([...SHELL, ...BUILD.files])].map(at);
       await Promise.all(
-        PRECACHE_ASSETS.map(async (url) => {
+        urls.map(async (url) => {
           try {
             const response = await fetch(url, { cache: 'no-cache' });
-            if (response.ok) {
-              await cache.put(url, response);
-            }
+            if (response.ok) await cache.put(url, response);
           } catch {
-            // Ignore missing optional precache items
+            // A missing optional file must not stop the install.
           }
         })
       );
@@ -41,97 +47,57 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event: Clear outdated caches and take control immediately
+// Activate: remove caches from older builds and take control right away.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== BUILD.cache).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch Event: Cache-First for assets, Network-First with Cache Fallback for navigation
+async function fromNetworkAndStore(request, cacheKey) {
+  const response = await fetch(request);
+  if (response && response.ok) {
+    const cache = await caches.open(BUILD.cache);
+    await cache.put(cacheKey || request, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
+  if (request.method !== 'GET' || !url.protocol.startsWith('http')) return;
 
-  // Only handle GET requests and http(s) protocols
-  if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
-    return;
-  }
-
-  // 1. Navigation requests (HTML pages) -> Network first, fallback to cached index.html
+  // Pages: always the cached game, never waiting on the network.
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseToCache);
-              cache.put(at('index.html'), responseToCache.clone());
-              cache.put(at(''), responseToCache.clone());
-            });
-          }
-          return networkResponse;
-        })
-        .catch(async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          const cachedIndex = await caches.match(at('index.html'));
-          if (cachedIndex) return cachedIndex;
-          const cachedRoot = await caches.match(at(''));
-          if (cachedRoot) return cachedRoot;
-          return new Response('Offline - RatDoku is ready to play once loaded.', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain' },
-          });
-        })
+      caches.match(INDEX).then(
+        (cached) =>
+          cached ||
+          fromNetworkAndStore(request, INDEX).catch(
+            () =>
+              new Response('RatDoku needs to be opened once with an internet connection.', {
+                status: 503,
+                headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+              })
+          )
+      )
     );
     return;
   }
 
-  // 2. Static Assets, Scripts, Styles, Fonts, Images -> Cache-First with Network Background Update
+  // Everything else: cache first; fetch (and keep) only what isn't cached yet.
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Stale-while-revalidate in background
-        fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
-            }
-          })
-          .catch(() => {});
-        return cachedResponse;
-      }
-
-      // If not cached, fetch from network and cache
-      return fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
-          }
-          return networkResponse;
+    caches.match(request, { ignoreSearch: true }).then(
+      (cached) =>
+        cached ||
+        fromNetworkAndStore(request).catch(() => {
+          if (request.destination === 'image') return caches.match(at('favicon.svg'));
+          return new Response('', { status: 503 });
         })
-        .catch(() => {
-          // If offline and request is an image, provide fallback favicon if available
-          if (request.destination === 'image') {
-            return caches.match(at('favicon.svg'));
-          }
-          return new Response('Offline asset unavailable', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain' },
-          });
-        });
-    })
+    )
   );
 });
-
