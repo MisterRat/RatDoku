@@ -172,6 +172,9 @@ export const es: Messages = {
   'settings.strikesOff': 'Modo relajado (errores ilimitados)',
   'settings.strikesBtnOn': '3 errores',
   'settings.strikesBtnOff': 'Relajado',
+  'settings.install': 'Instalar app',
+  'settings.installDesc': 'Añade RatDoku a tu pantalla de inicio o escritorio y juega sin conexión',
+  'settings.installIos': 'Para instalarla en iPhone o iPad, toca el botón Compartir y luego «Añadir a pantalla de inicio».',
   'settings.save': 'Guardar y cerrar',
   'settings.footer': 'RatDoku • ver. {version} por MrRat.com',
 };

@@ -171,6 +171,9 @@ export const pinyin: Messages = {
   'settings.strikesOff': 'Qīngsōng móshì (bú xiàn cuòwù cìshù)',
   'settings.strikesBtnOn': 'Sān cì shīwù',
   'settings.strikesBtnOff': 'Qīngsōng',
+  'settings.install': 'Ānzhuāng yìngyòng',
+  'settings.installDesc': 'Bǎ RatDoku tiānjiā dào zhǔ píngmù huò zhuōmiàn, líxiàn yě néng wán',
+  'settings.installIos': "Zài iPhone huò iPad shang: diǎn'àn “fēnxiǎng” ànniǔ, ránhòu xuǎnzé “tiānjiā dào zhǔ píngmù”.",
   'settings.save': 'Bǎocún bìng guānbì',
   'settings.footer': 'RatDoku • Bǎnběn {version} · MrRat.com chūpǐn',
 };

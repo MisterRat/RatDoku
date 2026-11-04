@@ -170,6 +170,9 @@ export const ko: Messages = {
   'settings.strikesOff': '편안한 모드 (실수 무제한)',
   'settings.strikesBtnOn': '3회 실수',
   'settings.strikesBtnOff': '편안하게',
+  'settings.install': '앱 설치',
+  'settings.installDesc': 'RatDoku를 홈 화면이나 데스크톱에 추가하고 오프라인으로 즐기세요',
+  'settings.installIos': "iPhone이나 iPad에서는 공유 버튼을 누른 다음 '홈 화면에 추가'를 선택하세요.",
   'settings.save': '저장하고 닫기',
   'settings.footer': 'RatDoku • 버전 {version} · MrRat.com',
 };

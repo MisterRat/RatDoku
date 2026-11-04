@@ -172,6 +172,9 @@ export const de: Messages = {
   'settings.strikesOff': 'Entspannter Modus (unbegrenzte Fehler)',
   'settings.strikesBtnOn': '3 Fehler',
   'settings.strikesBtnOff': 'Entspannt',
+  'settings.install': 'App installieren',
+  'settings.installDesc': 'Füge RatDoku zu deinem Startbildschirm oder Desktop hinzu und spiele offline',
+  'settings.installIos': 'Auf iPhone oder iPad: Tippe auf Teilen und dann auf „Zum Home-Bildschirm“.',
   'settings.save': 'Speichern und schließen',
   'settings.footer': 'RatDoku • Version {version} von MrRat.com',
 };

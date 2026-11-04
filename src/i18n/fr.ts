@@ -172,6 +172,9 @@ export const fr: Messages = {
   'settings.strikesOff': 'Mode détente (erreurs illimitées)',
   'settings.strikesBtnOn': '3 erreurs',
   'settings.strikesBtnOff': 'Détente',
+  'settings.install': "Installer l'app",
+  'settings.installDesc': "Ajoutez RatDoku à votre écran d'accueil ou à votre bureau et jouez hors ligne",
+  'settings.installIos': "Sur iPhone ou iPad, touchez le bouton Partager, puis « Sur l'écran d'accueil ».",
   'settings.save': 'Enregistrer et fermer',
   'settings.footer': 'RatDoku • v. {version} par MrRat.com',
 };

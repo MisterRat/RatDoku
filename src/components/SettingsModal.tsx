@@ -1,6 +1,7 @@
 import React from 'react';
 import { APP_VERSION } from '../version';
-import { X, Palette, Check, Languages, ChevronDown } from 'lucide-react';
+import { X, Palette, Check, Languages, ChevronDown, Download, Share } from 'lucide-react';
+import { promptInstall, useInstallState } from '../utils/install';
 import { GameSettings, ThemeMode } from '../types';
 import { LANGUAGES, detectDeviceLanguage, getLanguage, useI18n, type LanguageSetting, type MessageKey } from '../i18n';
 import { THEMES, ThemeStyles } from '../utils/theme';
@@ -19,6 +20,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   theme,
 }) => {
   const { t } = useI18n();
+  const installState = useInstallState();
   const currentLanguage: LanguageSetting = settings.language ?? 'auto';
   const deviceLanguageName = getLanguage(detectDeviceLanguage()).nativeName;
   const languageOptions: { value: LanguageSetting; label: string }[] = [
@@ -244,6 +246,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Install as an app (only where the device supports it and it isn't installed yet) */}
+        {installState !== 'none' && (
+          <div className="space-y-2.5 pt-2 border-t border-neutral-200 dark:border-neutral-800">
+            <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+              <Download className="w-3.5 h-3.5" />
+              {t('settings.install')}
+            </label>
+            <p className="text-[11px] text-neutral-500">{t('settings.installDesc')}</p>
+            {installState === 'prompt' ? (
+              <button
+                id="btn-install-app"
+                type="button"
+                onClick={() => void promptInstall()}
+                className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 ${theme.controlBtnBg} cursor-pointer active:scale-95 transition-all`}
+              >
+                <Download className="w-4 h-4" />
+                <span>{t('settings.install')}</span>
+              </button>
+            ) : (
+              <p
+                id="install-ios-tip"
+                className={`flex items-start gap-2 p-3 rounded-xl text-xs ${theme.subtleBg} border ${theme.borderColor}`}
+              >
+                <Share className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>{t('settings.installIos')}</span>
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Close Button */}
         <button
