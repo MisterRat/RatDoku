@@ -29,8 +29,11 @@ function standaloneHtml(): Plugin {
         .replace(/\s*<link rel="manifest"[^>]*>/, '');
     },
     closeBundle() {
-      // Move the result next to the website build as dist/RatDoku.html.
+      // Publish it next to the website build (dist/RatDoku.html, served on GitHub Pages)
+      // and refresh the copy kept in the repository root (RatDoku.html), which is
+      // committed with every change so it can be downloaded straight from GitHub.
       copyFileSync('dist-single/index.html', 'dist/RatDoku.html');
+      copyFileSync('dist-single/index.html', 'RatDoku.html');
       rmSync('dist-single', {recursive: true, force: true});
     },
   };
