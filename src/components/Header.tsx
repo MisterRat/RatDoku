@@ -13,8 +13,9 @@ import {
   Plus,
 } from 'lucide-react';
 import { Difficulty, GameMode } from '../types';
-import { formatTime, formatDateDisplay } from '../utils/storage';
+import { formatTime } from '../utils/storage';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface HeaderProps {
   difficulty: Difficulty;
@@ -61,6 +62,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   theme,
 }) => {
+  const { t, difficulty: diffName } = useI18n();
   return (
     <header className="w-full max-w-[540px] mx-auto space-y-3 px-2 sm:px-4 pt-3 sm:pt-4">
       {/* Top Level Brand & Quick Actions */}
@@ -74,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({
               RAT<span className="font-bold text-indigo-400">DOKU</span>
             </h1>
             <p className="text-[10px] tracking-wider text-slate-400 dark:text-slate-500 font-medium leading-none mt-1">
-              ver {APP_VERSION} by MrRat.com
+              {t('header.version', { version: APP_VERSION })}
             </p>
           </div>
         </div>
@@ -87,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={onOpenDailyModal}
               className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-xs font-semibold border border-amber-200 dark:border-amber-900/50 cursor-pointer hover:bg-amber-100 transition-colors"
-              title={`${dailyStreak} day streak! Tap for daily challenges`}
+              title={t('header.streakTitle', { count: dailyStreak })}
             >
               <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>{dailyStreak}</span>
@@ -99,8 +101,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onOpenDailyModal}
             className={`p-2 rounded-lg ${theme.controlBtnBg} cursor-pointer hover:opacity-80 transition-opacity`}
-            title="Daily Challenges Calendar"
-            aria-label="Daily Challenges Calendar"
+            title={t('header.calendar')}
+            aria-label={t('header.calendar')}
           >
             <Calendar className="w-4 h-4" />
           </button>
@@ -110,8 +112,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onOpenStats}
             className={`p-2 rounded-lg ${theme.controlBtnBg} cursor-pointer hover:opacity-80 transition-opacity`}
-            title="Performance Statistics"
-            aria-label="Performance Statistics"
+            title={t('header.stats')}
+            aria-label={t('header.stats')}
           >
             <BarChart3 className="w-4 h-4" />
           </button>
@@ -121,8 +123,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onToggleSound}
             className={`p-2 rounded-lg ${theme.controlBtnBg} cursor-pointer hover:opacity-80 transition-opacity`}
-            title={soundEnabled ? 'Mute Sounds' : 'Unmute Sounds'}
-            aria-label={soundEnabled ? 'Mute Sounds' : 'Unmute Sounds'}
+            title={soundEnabled ? t('header.mute') : t('header.unmute')}
+            aria-label={soundEnabled ? t('header.mute') : t('header.unmute')}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4 text-neutral-400" />}
           </button>
@@ -132,8 +134,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onOpenSettings}
             className={`p-2 rounded-lg ${theme.controlBtnBg} cursor-pointer hover:opacity-80 transition-opacity`}
-            title="Game Settings"
-            aria-label="Game Settings"
+            title={t('header.settings')}
+            aria-label={t('header.settings')}
           >
             <SettingsIcon className="w-4 h-4" />
           </button>
@@ -158,7 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
                     : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
                 }`}
               >
-                {d}
+                {diffName(d)}
               </button>
             );
           })}
@@ -176,7 +178,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : `${theme.controlBtnBg}`
             }`}
           >
-            {mode === 'daily' ? 'Daily' : 'Classic'}
+            {mode === 'daily' ? t('header.daily') : t('header.classic')}
           </button>
 
           <button
@@ -184,10 +186,10 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onNewGame}
             className={`flex items-center gap-0.5 sm:gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs font-medium ${theme.accentBtn} cursor-pointer transition-all shadow-xs active:scale-95`}
-            title="Generate a new game"
+            title={t('header.newTitle')}
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New</span>
+            <span>{t('header.new')}</span>
           </button>
 
           <button
@@ -195,8 +197,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onRestartCurrentGame}
             className={`p-1 sm:p-1.5 rounded-md sm:rounded-lg ${theme.controlBtnBg} cursor-pointer hover:opacity-80 transition-opacity`}
-            title="Restart current board"
-            aria-label="Restart current board"
+            title={t('header.restart')}
+            aria-label={t('header.restart')}
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -207,7 +209,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className={`flex items-center justify-between py-2 px-4 rounded-xl ${theme.subtleBg} border ${theme.borderColor} text-xs`}>
         {/* Mistakes */}
         <div className="flex flex-col">
-          <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">Mistakes</span>
+          <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">{t('header.mistakes')}</span>
           <span className={`font-mono text-base font-semibold ${mistakesCount > 0 ? 'text-rose-400' : 'text-slate-300'}`}>
             {errorLimit ? `${mistakesCount} / ${errorLimit}` : mistakesCount}
           </span>
@@ -216,7 +218,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Live Timer */}
         <div className="flex items-center gap-2.5">
           <div className="flex flex-col items-end">
-            <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">Time Elapsed</span>
+            <span className="text-[10px] uppercase tracking-widest text-slate-500 font-medium">{t('header.time')}</span>
             <span className="font-mono text-base font-semibold text-indigo-300 tracking-wider">
               {formatTime(timerSeconds)}
             </span>
@@ -226,8 +228,8 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             onClick={onTogglePause}
             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer transition-colors"
-            title={isPaused ? 'Resume Game' : 'Pause Game'}
-            aria-label={isPaused ? 'Resume Game' : 'Pause Game'}
+            title={isPaused ? t('header.resume') : t('header.pause')}
+            aria-label={isPaused ? t('header.resume') : t('header.pause')}
           >
             {isPaused ? <Play className="w-3.5 h-3.5 text-indigo-400 fill-indigo-400" /> : <Pause className="w-3.5 h-3.5" />}
           </button>

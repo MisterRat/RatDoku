@@ -3,6 +3,7 @@ import { X, Calendar as CalendarIcon, Check, Play, Flame, Trophy, ChevronLeft, C
 import { Difficulty } from '../types';
 import { loadDailyRecords, getTodayDateKey, formatTime } from '../utils/storage';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface DailyChallengeModalProps {
   onSelectDailyGame: (dateKey: string, difficulty: Difficulty) => void;
@@ -19,6 +20,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   dailyStreak,
   theme,
 }) => {
+  const { t, difficulty: diffName, formatDate, formatMonthYear } = useI18n();
   const todayKey = getTodayDateKey();
   const [selectedDate, setSelectedDate] = useState<string>(currentDateKey || todayKey);
   const records = loadDailyRecords();
@@ -30,7 +32,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const todayDay = now.getDate();
 
-  const monthName = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthName = formatMonthYear(now);
 
   const getRecordForDay = (dayNum: number, diff: Difficulty) => {
     const dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
@@ -69,9 +71,9 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
               <CalendarIcon className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold tracking-tight">Daily Sudoku</h3>
+              <h3 className="text-lg font-bold tracking-tight">{t('daily.title')}</h3>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                1 fresh Easy, Medium & Hard puzzle generated every day
+                {t('daily.subtitle')}
               </p>
             </div>
           </div>
@@ -80,7 +82,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer"
-            aria-label="Close modal"
+            aria-label={t('common.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,15 +95,15 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
               <Flame className="w-5 h-5 fill-amber-500" />
             </div>
             <div>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">Daily Streak</span>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('daily.streak')}</span>
               <p className="text-base font-bold text-neutral-900 dark:text-white">
-                {dailyStreak} {dailyStreak === 1 ? 'Day' : 'Days'}
+                {t('daily.days', { count: dailyStreak })}
               </p>
             </div>
           </div>
 
           <div className="text-right">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">Month</span>
+            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('daily.month')}</span>
             <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">{monthName}</p>
           </div>
         </div>
@@ -110,7 +112,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-              {selectedDate === todayKey ? "Today's Puzzles" : `Puzzles for ${selectedDate}`}
+              {selectedDate === todayKey ? t('daily.today') : t('daily.puzzlesFor', { date: formatDate(selectedDate) })}
             </h4>
             <span className="text-xs text-neutral-500 font-mono-num">{selectedDate}</span>
           </div>
@@ -132,27 +134,27 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                   className={`p-3 rounded-xl border flex flex-col justify-between space-y-3 transition-all ${diffColors[diff]}`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wide">{diff}</span>
+                    <span className="text-xs font-bold uppercase tracking-wide">{diffName(diff)}</span>
                     {isDone ? (
                       <span className="p-1 rounded-full bg-emerald-500 text-white shadow-xs">
                         <Check className="w-3 h-3" />
                       </span>
                     ) : (
-                      <span className="text-[10px] uppercase font-semibold text-neutral-500">Ready</span>
+                      <span className="text-[10px] uppercase font-semibold text-neutral-500">{t('daily.ready')}</span>
                     )}
                   </div>
 
                   <div>
                     {isDone ? (
                       <div className="text-xs">
-                        <div className="text-neutral-500 dark:text-neutral-400 text-[10px]">Solved in</div>
+                        <div className="text-neutral-500 dark:text-neutral-400 text-[10px]">{t('daily.solvedIn')}</div>
                         <div className="font-mono-num font-bold text-sm text-neutral-900 dark:text-white">
                           {formatTime(record.timeSeconds)}
                         </div>
                       </div>
                     ) : (
                       <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Unsolved puzzle
+                        {t('daily.unsolved')}
                       </div>
                     )}
                   </div>
@@ -171,7 +173,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                     }`}
                   >
                     <Play className="w-3 h-3 fill-current" />
-                    <span>{isDone ? 'Replay' : 'Play'}</span>
+                    <span>{isDone ? t('daily.replay') : t('daily.play')}</span>
                   </button>
                 </div>
               );
@@ -183,9 +185,9 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
         <div className="space-y-2 pt-2 border-t border-neutral-200 dark:border-neutral-800">
           <div className="flex items-center justify-between">
             <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-              Calendar Explorer
+              {t('daily.calendar')}
             </h4>
-            <span className="text-[11px] text-neutral-400">Tap a date to load its puzzles</span>
+            <span className="text-[11px] text-neutral-400">{t('daily.tapDate')}</span>
           </div>
 
           <div className="grid grid-cols-7 gap-1.5 text-center text-xs">

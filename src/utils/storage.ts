@@ -21,6 +21,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
   highlightPeers: true,
   errorLimit: null, // Unlimited by default
   theme: 'elegant-dark',
+  language: 'auto', // follow the device language until the player picks one
 };
 
 const DEFAULT_DIFF_STATS = {
@@ -205,18 +206,4 @@ export function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-}
-
-export function formatDateDisplay(dateKey: string): string {
-  try {
-    const [year, month, day] = dateKey.split('-').map(Number);
-    const d = new Date(year, month - 1, day);
-    return d.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  } catch {
-    return dateKey;
-  }
 }

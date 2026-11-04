@@ -501,6 +501,8 @@ export function findSmartHint(
             ? `The ${val} at Row ${r + 1}, Column ${c + 1} repeats a number already in its row, column or box. Clearing this square will unlock the logical path.`
             : `The ${val} at Row ${r + 1}, Column ${c + 1} doesn't break any rule yet, but it isn't part of this puzzle's solution and will cause a contradiction later. Clearing this square will unlock the logical path.`,
           technique: breaksRule ? 'Conflict Resolution' : 'Error Check',
+          messageId: breaksRule ? 'conflict' : 'incorrect',
+          params: { value: val, row: r + 1, col: c + 1 },
           highlights: [{ row: r, col: c, type: 'target' }],
         };
       }
@@ -565,6 +567,8 @@ export function findSmartHint(
           title: `Key Cell in Box ${boxNumber}`,
           explanation: `Look closely at 3×3 Box ${boxNumber}. There is a missing number that can only legally fit into Row ${r + 1}, Column ${c + 1} because all other empty squares in this box are blocked by row and column peers. Check which missing number fits here!`,
           technique: 'Hidden Single (Box)',
+          messageId: 'keyCellBox',
+          params: { box: boxNumber, row: r + 1, col: c + 1 },
           highlights: [
             { row: r, col: c, type: 'target' },
             ...boxCoords.map(([br, bc]) => ({ row: br, col: bc, type: 'peer' as const })),
@@ -600,6 +604,8 @@ export function findSmartHint(
           title: `Key Cell in Row ${r + 1}`,
           explanation: `Scan Row ${r + 1}. One of the missing numbers for this row can only be placed in Column ${col + 1} because other empty squares in this row are ruled out by column or box constraints. Test the row's missing numbers!`,
           technique: 'Hidden Single (Row)',
+          messageId: 'keyCellRow',
+          params: { row: r + 1, col: col + 1 },
           highlights: [
             { row: r, col, type: 'target' },
             ...Array.from({ length: 9 }, (_, i) => ({ row: r, col: i, type: 'peer' as const })),
@@ -635,6 +641,8 @@ export function findSmartHint(
           title: `Key Cell in Column ${c + 1}`,
           explanation: `Scan Column ${c + 1}. One of the missing column digits has only a single valid spot at Row ${row + 1}. Check the column's remaining digits to identify it.`,
           technique: 'Hidden Single (Column)',
+          messageId: 'keyCellCol',
+          params: { row: row + 1, col: c + 1 },
           highlights: [
             { row, col: c, type: 'target' },
             ...Array.from({ length: 9 }, (_, i) => ({ row: i, col: c, type: 'peer' as const })),
@@ -669,6 +677,8 @@ export function findSmartHint(
               title: `Locked Line in Box ${b + 1}`,
               explanation: `Notice how in Box ${b + 1}, a candidate is constrained strictly to Row ${row + 1}. This eliminates that number from the rest of Row ${row + 1} outside this box, narrowing down your pencil marks.`,
               technique: 'Locked Candidates (Pointing)',
+              messageId: 'lockedRow',
+              params: { box: b + 1, row: row + 1 },
               highlights: [
                 ...numSpots.map(([r, c]) => ({ row: r, col: c, type: 'target' as const })),
                 ...outsideCells.map((c) => ({ row, col: c, type: 'cause' as const })),
@@ -691,6 +701,8 @@ export function findSmartHint(
               title: `Locked Column in Box ${b + 1}`,
               explanation: `In Box ${b + 1}, a candidate can only appear along Column ${col + 1}. This rules out that number from the rest of Column ${col + 1} outside this box.`,
               technique: 'Locked Candidates (Pointing)',
+              messageId: 'lockedCol',
+              params: { box: b + 1, col: col + 1 },
               highlights: [
                 ...numSpots.map(([r, c]) => ({ row: r, col: c, type: 'target' as const })),
                 ...outsideCells.map((r) => ({ row: r, col, type: 'cause' as const })),
@@ -729,6 +741,8 @@ export function findSmartHint(
       title: `Opportunity at Row ${bestR + 1}, Col ${bestC + 1}`,
       explanation: `Check Row ${bestR + 1}, Column ${bestC + 1} and examine its row, column, and box peers. Almost all digits 1–9 are eliminated by neighboring cells, leaving very few possibilities to test.`,
       technique: 'Peer Elimination',
+      messageId: 'opportunity',
+      params: { row: bestR + 1, col: bestC + 1 },
       highlights: [
         { row: bestR, col: bestC, type: 'target' },
         ...getDirectPeers(currentGrid, bestR, bestC),
@@ -758,6 +772,8 @@ function checkHiddenSingleInRow(grid: number[][], row: number, col: number): Hin
         title: `Single Option in Row ${row + 1}`,
         explanation: `In Row ${row + 1}, Column ${col + 1} is the ONLY square where a certain missing digit can legally go. Cross-reference the columns crossing this row to identify which number it is.`,
         technique: 'Hidden Single (Row)',
+        messageId: 'singleRow',
+        params: { row: row + 1, col: col + 1 },
         highlights: [
           { row, col, type: 'target' },
           ...Array.from({ length: 9 }, (_, i) => ({ row, col: i, type: 'peer' as const })),
@@ -787,6 +803,8 @@ function checkHiddenSingleInCol(grid: number[][], row: number, col: number): Hin
         title: `Single Option in Column ${col + 1}`,
         explanation: `In Column ${col + 1}, Row ${row + 1} is the ONLY open cell that can take one of the column's missing digits. Examine the intersecting rows to see which number fits.`,
         technique: 'Hidden Single (Column)',
+        messageId: 'singleCol',
+        params: { row: row + 1, col: col + 1 },
         highlights: [
           { row, col, type: 'target' },
           ...Array.from({ length: 9 }, (_, i) => ({ row: i, col, type: 'peer' as const })),
@@ -819,6 +837,8 @@ function checkHiddenSingleInBox(grid: number[][], row: number, col: number): Hin
         title: `Single Option in Box ${boxIndex + 1}`,
         explanation: `Inside 3×3 Box ${boxIndex + 1}, Row ${row + 1}, Column ${col + 1} is the ONLY open cell that can accept one of the box's missing numbers. Check which missing number avoids all row and column conflicts.`,
         technique: 'Hidden Single (Box)',
+        messageId: 'singleBox',
+        params: { box: boxIndex + 1, row: row + 1, col: col + 1 },
         highlights: [
           { row, col, type: 'target' },
           ...boxCoords.map(([r, c]) => ({ row: r, col: c, type: 'peer' as const })),
@@ -877,6 +897,8 @@ function buildNakedSingleHint(
     title: `Naked Single at Row ${row + 1}, Col ${col + 1}`,
     explanation: `This highlighted cell has only ONE legal number remaining after eliminating all numbers present in its row, column, and 3×3 box. Cross-reference the highlighted peers to find which number (1–9) is missing!`,
     technique: 'Naked Single',
+    messageId: 'nakedSingle',
+    params: { row: row + 1, col: col + 1 },
     highlights,
   };
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Lightbulb, X, Check } from 'lucide-react';
 import { HintInfo } from '../types';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface HintBarProps {
   hint: HintInfo;
@@ -16,6 +17,8 @@ export const HintBar: React.FC<HintBarProps> = ({
   onDismiss,
   theme,
 }) => {
+  const { t, hint: describeHint } = useI18n();
+  const text = describeHint(hint);
   return (
     <div
       id="sudoku-hint-card"
@@ -29,10 +32,10 @@ export const HintBar: React.FC<HintBarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h4 className="text-xs sm:text-sm font-bold tracking-tight text-amber-900 dark:text-amber-200">
-                {hint.title}
+                {text.title}
               </h4>
               <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-amber-200/70 dark:bg-amber-800/60 text-amber-800 dark:text-amber-300">
-                {hint.technique}
+                {text.technique}
               </span>
             </div>
           </div>
@@ -43,15 +46,15 @@ export const HintBar: React.FC<HintBarProps> = ({
           type="button"
           onClick={onDismiss}
           className="p-1 rounded-md text-amber-700 dark:text-amber-400 hover:bg-amber-200/50 dark:hover:bg-amber-900/50 cursor-pointer"
-          title="Dismiss Hint"
-          aria-label="Dismiss Hint"
+          title={t('hint.dismiss')}
+          aria-label={t('hint.dismiss')}
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
       <p className="text-xs sm:text-sm text-amber-900/90 dark:text-amber-200/90 mt-2 leading-relaxed">
-        {hint.explanation}
+        {text.text}
       </p>
 
       <div className="flex items-center justify-end gap-2 mt-3 pt-2 border-t border-amber-200 dark:border-amber-800/60">
@@ -62,7 +65,7 @@ export const HintBar: React.FC<HintBarProps> = ({
           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs cursor-pointer active:scale-95 transition-all"
         >
           <Check className="w-3.5 h-3.5" />
-          <span>Got it, I'll solve it</span>
+          <span>{t('hint.gotIt')}</span>
         </button>
       </div>
     </div>

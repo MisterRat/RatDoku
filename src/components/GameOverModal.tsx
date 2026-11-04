@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertCircle, RotateCcw, Plus } from 'lucide-react';
 import { Difficulty } from '../types';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface GameOverModalProps {
   difficulty: Difficulty;
@@ -16,6 +17,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   onNewGame,
   theme,
 }) => {
+  const { t, difficulty: diffName } = useI18n();
   return (
     <div
       id="game-over-modal-backdrop"
@@ -30,9 +32,9 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
         </div>
 
         <div>
-          <h3 className="text-xl font-bold tracking-tight">Game Over</h3>
+          <h3 className="text-xl font-bold tracking-tight">{t('gameOver.title')}</h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-            You made 3 mistakes on this {difficulty} puzzle.
+            {t('gameOver.text', { difficulty: diffName(difficulty) })}
           </p>
         </div>
 
@@ -44,7 +46,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             className={`w-full py-2.5 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 ${theme.accentBtn} cursor-pointer active:scale-95 transition-all`}
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Try This Puzzle Again</span>
+            <span>{t('gameOver.tryAgain')}</span>
           </button>
 
           <button
@@ -54,7 +56,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             className={`w-full py-2.5 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 ${theme.controlBtnBg} cursor-pointer active:scale-95 transition-all`}
           >
             <Plus className="w-4 h-4" />
-            <span>Generate New Game</span>
+            <span>{t('gameOver.newGame')}</span>
           </button>
         </div>
       </div>
