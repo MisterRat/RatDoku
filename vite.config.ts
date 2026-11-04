@@ -1,7 +1,8 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {copyFileSync, readFileSync, rmSync} from 'fs';
+import {readFileSync, rmSync, writeFileSync} from 'fs';
+import {createHash} from 'crypto';
 import {viteSingleFile} from 'vite-plugin-singlefile';
 import type {Plugin} from 'vite';
 import {defineConfig} from 'vitest/config';
@@ -31,8 +32,41 @@ function standaloneHtml(): Plugin {
     closeBundle() {
       // Refresh the copy kept in the repository root (RatDoku.html). It is committed with
       // every change so it can be downloaded straight from GitHub; it is not part of the website.
-      copyFileSync('dist-single/index.html', 'RatDoku.html');
+      // Keep only the modern .woff2 copy of each embedded font (every current browser uses it).
+      const html = readFileSync('dist-single/index.html', 'utf-8').replace(
+        /,\s*url\(data:font\/woff;base64,[^)]*\)\s*format\("woff"\)/g,
+        '',
+      );
+      writeFileSync('RatDoku.html', html);
       rmSync('dist-single', {recursive: true, force: true});
+    },
+  };
+}
+
+/**
+ * Website build only: writes this build's file list into dist/sw.js, so the service worker
+ * downloads the whole game on the first visit and can run offline from then on. The cache
+ * name changes whenever any file changes, which also makes browsers pick up the new version.
+ */
+function precacheList(): Plugin {
+  let files: string[] = [];
+  return {
+    name: 'ratdoku-precache-list',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      // .woff fonts are only a fallback for very old browsers; current ones use .woff2.
+      files = Object.keys(bundle)
+        .filter((f) => !f.endsWith('.map') && !f.endsWith('.woff'))
+        .sort();
+    },
+    closeBundle() {
+      const swPath = 'dist/sw.js';
+      const placeholder = "/*__RATDOKU_BUILD__*/ { cache: 'ratdoku-dev', files: [] }";
+      const sw = readFileSync(swPath, 'utf-8');
+      if (!sw.includes(placeholder)) throw new Error('sw.js build placeholder not found');
+      const hash = createHash('sha256').update(files.join('\n')).digest('hex').slice(0, 10);
+      const build = {cache: `ratdoku-${pkg.version}-${hash}`, files};
+      writeFileSync(swPath, sw.replace(placeholder, JSON.stringify(build)));
     },
   };
 }
@@ -47,7 +81,7 @@ export default defineConfig(({mode}) => {
     // Relative base so the same build works at the site root (Docker)
     // and under a sub-path such as /RatDoku/ (GitHub Pages).
     base: './',
-    plugins: [react(), tailwindcss(), ...(single ? [viteSingleFile(), standaloneHtml()] : [])],
+    plugins: [react(), tailwindcss(), ...(single ? [viteSingleFile(), standaloneHtml()] : [precacheList()])],
     define: {
       __APP_VERSION__: JSON.stringify(pkg.version),
     },
