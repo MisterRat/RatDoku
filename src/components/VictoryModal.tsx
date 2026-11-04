@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Trophy, Clock, Zap, Lightbulb, AlertTriangle, ArrowRight, RotateCw, Calendar, Flame } from 'lucide-react';
 import { Difficulty, GameMode } from '../types';
-import { formatTime, formatDateDisplay } from '../utils/storage';
+import { formatTime } from '../utils/storage';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface VictoryModalProps {
   difficulty: Difficulty;
@@ -38,6 +39,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
   onClose,
   theme,
 }) => {
+  const { t, difficulty: diffName, formatDate } = useI18n();
   useEffect(() => {
     // Launch celebratory confetti bursts
     try {
@@ -87,18 +89,21 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <Trophy className="w-9 h-9" />
           {isNewBest && (
             <span className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-bold shadow">
-              NEW BEST!
+              {t('victory.newBest')}
             </span>
           )}
         </div>
 
         {/* Title */}
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Puzzle Solved!</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t('victory.solved')}</h2>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1 capitalize">
             {mode === 'daily'
-              ? `Daily Challenge (${difficulty}) • ${dateKey ? formatDateDisplay(dateKey) : 'Today'}`
-              : `${difficulty} Difficulty Complete`}
+              ? t('victory.dailySubtitle', {
+                  difficulty: diffName(difficulty),
+                  date: dateKey ? formatDate(dateKey) : t('victory.today'),
+                })
+              : t('victory.classicSubtitle', { difficulty: diffName(difficulty) })}
           </p>
         </div>
 
@@ -108,14 +113,14 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <div className="flex flex-col items-center justify-center">
             <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 text-xs font-medium mb-1">
               <Clock className="w-3.5 h-3.5" />
-              <span>Time</span>
+              <span>{t('victory.time')}</span>
             </div>
             <span className="font-mono-num text-lg font-bold text-neutral-900 dark:text-white">
               {formatTime(timeSeconds)}
             </span>
             {bestTime !== null && (
               <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
-                Best: {formatTime(bestTime)}
+                {t('victory.best', { time: formatTime(bestTime) })}
               </span>
             )}
           </div>
@@ -124,13 +129,13 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <div className="flex flex-col items-center justify-center border-x border-neutral-200 dark:border-neutral-700/60 px-2">
             <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 text-xs font-medium mb-1">
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Mistakes</span>
+              <span>{t('victory.mistakes')}</span>
             </div>
             <span className="font-mono-num text-lg font-bold text-neutral-900 dark:text-white">
               {mistakesCount}
             </span>
             <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
-              {mistakesCount === 0 ? 'Flawless' : 'Completed'}
+              {mistakesCount === 0 ? t('victory.flawless') : t('victory.completed')}
             </span>
           </div>
 
@@ -138,13 +143,13 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
           <div className="flex flex-col items-center justify-center">
             <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 text-xs font-medium mb-1">
               <Lightbulb className="w-3.5 h-3.5" />
-              <span>Hints</span>
+              <span>{t('victory.hints')}</span>
             </div>
             <span className="font-mono-num text-lg font-bold text-neutral-900 dark:text-white">
               {hintsUsed}
             </span>
             <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
-              {hintsUsed === 0 ? 'No hints' : 'Assisted'}
+              {hintsUsed === 0 ? t('victory.noHints') : t('victory.assisted')}
             </span>
           </div>
         </div>
@@ -153,7 +158,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
         {mode === 'daily' && dailyStreak > 0 && (
           <div className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-semibold">
             <Flame className="w-4 h-4 fill-amber-500 text-amber-500" />
-            <span>Daily Streak: {dailyStreak} {dailyStreak === 1 ? 'day' : 'days'} in a row!</span>
+            <span>{t('victory.streak', { count: dailyStreak })}</span>
           </div>
         )}
 
@@ -167,7 +172,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             className={`w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${theme.accentBtn} shadow-md cursor-pointer active:scale-98 transition-transform`}
           >
             <RotateCw className="w-4 h-4" />
-            <span className="capitalize">Play Another {difficulty} Game</span>
+            <span>{t('victory.playAnother', { difficulty: diffName(difficulty) })}</span>
           </button>
 
           {/* Optional next difficulty if available */}
@@ -178,7 +183,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
               onClick={onPlayNextDifficulty}
               className={`w-full py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 ${theme.controlBtnBg} cursor-pointer active:scale-98 transition-transform`}
             >
-              <span>Try {nextDiff.toUpperCase()} Level</span>
+              <span>{t('victory.tryNext', { difficulty: diffName(nextDiff) })}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           )}
@@ -190,7 +195,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
             onClick={onOpenDailyModal}
             className="w-full py-2 text-xs font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
           >
-            View Daily Challenges Calendar
+            {t('victory.viewCalendar')}
           </button>
         </div>
       </div>

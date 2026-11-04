@@ -37,6 +37,7 @@ import { DailyChallengeModal } from './components/DailyChallengeModal';
 import { StatsModal } from './components/StatsModal';
 import { SettingsModal } from './components/SettingsModal';
 import { GameOverModal } from './components/GameOverModal';
+import { I18nProvider } from './i18n';
 
 export default function App() {
   // Settings & Theme
@@ -733,187 +734,189 @@ export default function App() {
   }, [handleNumberInput, handleErase, handleUndo, handleTriggerHint, activeHint, showDailyModal, showStatsModal, showSettingsModal, board, isGenerating]);
 
   return (
-    <div
-      id="sudoku-app-root"
-      className={`min-h-screen ${theme.bodyBg} ${theme.textColor} transition-colors duration-200 flex flex-col justify-between pb-6`}
-    >
-      {/* Header */}
-      <Header
-        difficulty={difficulty}
-        onChangeDifficulty={(newDiff) => {
-          setDifficulty(newDiff);
-          startNewGame(newDiff, mode, dateKey);
-        }}
-        mode={mode}
-        dateKey={dateKey}
-        onSelectDaily={() => {
-          const today = getTodayDateKey();
-          setMode('daily');
-          setDateKey(today);
-          startNewGame(difficulty, 'daily', today);
-        }}
-        onSelectClassic={() => {
-          setMode('classic');
-          startNewGame(difficulty, 'classic');
-        }}
-        onNewGame={() => startNewGame(difficulty, mode, dateKey)}
-        onRestartCurrentGame={restartCurrentBoard}
-        timerSeconds={timerSeconds}
-        isPaused={isPaused}
-        onTogglePause={() => {
-          if (!isGenerating) setIsPaused((prev) => !prev);
-        }}
-        mistakesCount={mistakesCount}
-        errorLimit={settings.errorLimit}
-        dailyStreak={stats.dailyStreak}
-        soundEnabled={settings.soundEnabled}
-        onToggleSound={() => {
-          const nextVal = !settings.soundEnabled;
-          const updated = { ...settings, soundEnabled: nextVal };
-          setSettings(updated);
-          saveSettings(updated);
-        }}
-        onOpenStats={() => setShowStatsModal(true)}
-        onOpenDailyModal={() => setShowDailyModal(true)}
-        onOpenSettings={() => setShowSettingsModal(true)}
-        theme={theme}
-      />
-
-      {/* Main Play Area */}
-      <main className="w-full flex-1 flex flex-col items-center justify-center py-2 sm:py-3 space-y-3">
-        {/* Active Smart Hint Card */}
-        {activeHint && (
-          <div className="w-full px-2 sm:px-4">
-            <HintBar
-              hint={activeHint}
-              onApplyHint={handleApplyHint}
-              onDismiss={() => setActiveHint(null)}
-              theme={theme}
-            />
-          </div>
-        )}
-
-        {/* 9x9 Sudoku Grid */}
-        <SudokuGrid
-          board={board}
-          selectedCell={selectedCell}
-          onSelectCell={handleSelectCell}
-          highlightedNumber={highlightedNumber}
-          activeHint={activeHint}
-          theme={theme}
-          isPaused={isPaused}
-          isGenerating={isGenerating}
-          onResume={() => {
-            if (!isGenerating) setIsPaused(false);
-          }}
-          highlightPeers={settings.highlightPeers}
-          highlightMatchingNumbers={settings.highlightMatchingNumbers}
-          highlightDuplicates={settings.highlightDuplicates}
-        />
-
-        {/* Actions & Number Pad */}
-        <Controls
-          onNumberInput={handleNumberInput}
-          onErase={handleErase}
-          onUndo={handleUndo}
-          canUndo={history.length > 0}
-          isNoteMode={isNoteMode}
-          onToggleNoteMode={() => {
-            setIsNoteMode((prev) => !prev);
-            soundManager.playSelect();
-          }}
-          onTriggerHint={handleTriggerHint}
-          numberCounts={numberCounts}
-          selectedNumber={highlightedNumber}
-          theme={theme}
-        />
-      </main>
-
-      {/* Victory Celebration Modal */}
-      {showVictoryModal && (
-        <VictoryModal
+    <I18nProvider setting={settings.language}>
+      <div
+        id="sudoku-app-root"
+        className={`min-h-screen ${theme.bodyBg} ${theme.textColor} transition-colors duration-200 flex flex-col justify-between pb-6`}
+      >
+        {/* Header */}
+        <Header
           difficulty={difficulty}
+          onChangeDifficulty={(newDiff) => {
+            setDifficulty(newDiff);
+            startNewGame(newDiff, mode, dateKey);
+          }}
           mode={mode}
           dateKey={dateKey}
-          timeSeconds={timerSeconds}
-          bestTime={stats[difficulty].bestTime}
-          isNewBest={isNewBestTime}
-          mistakesCount={mistakesCount}
-          hintsUsed={hintsCount}
-          dailyStreak={stats.dailyStreak}
-          onPlayAnotherSameLevel={() => {
-            setShowVictoryModal(false);
-            startNewGame(difficulty, mode, dateKey);
-          }}
-          onPlayNextDifficulty={
-            difficulty === 'easy'
-              ? () => {
-                  setShowVictoryModal(false);
-                  startNewGame('medium', mode, dateKey);
-                }
-              : difficulty === 'medium'
-              ? () => {
-                  setShowVictoryModal(false);
-                  startNewGame('hard', mode, dateKey);
-                }
-              : undefined
-          }
-          onOpenDailyModal={() => {
-            setShowVictoryModal(false);
-            setShowDailyModal(true);
-          }}
-          onClose={() => setShowVictoryModal(false)}
-          theme={theme}
-        />
-      )}
-
-      {/* Daily Challenge Calendar Modal */}
-      {showDailyModal && (
-        <DailyChallengeModal
-          onSelectDailyGame={(selectedDate, selectedDiff) => {
+          onSelectDaily={() => {
+            const today = getTodayDateKey();
             setMode('daily');
-            setDateKey(selectedDate);
-            setDifficulty(selectedDiff);
-            startNewGame(selectedDiff, 'daily', selectedDate);
+            setDateKey(today);
+            startNewGame(difficulty, 'daily', today);
           }}
-          onClose={() => setShowDailyModal(false)}
-          currentDateKey={dateKey}
-          dailyStreak={stats.dailyStreak}
-          theme={theme}
-        />
-      )}
-
-      {/* Statistics Modal */}
-      {showStatsModal && (
-        <StatsModal
-          stats={stats}
-          onClose={() => setShowStatsModal(false)}
-          theme={theme}
-        />
-      )}
-
-      {/* Settings Modal */}
-      {showSettingsModal && (
-        <SettingsModal
-          settings={settings}
-          onUpdateSettings={(newSettings) => {
-            setSettings(newSettings);
-            saveSettings(newSettings);
+          onSelectClassic={() => {
+            setMode('classic');
+            startNewGame(difficulty, 'classic');
           }}
-          onClose={() => setShowSettingsModal(false)}
-          theme={theme}
-        />
-      )}
-
-      {/* Game Over Modal (3-strikes limit) */}
-      {showGameOverModal && (
-        <GameOverModal
-          difficulty={difficulty}
-          onRestart={restartCurrentBoard}
           onNewGame={() => startNewGame(difficulty, mode, dateKey)}
+          onRestartCurrentGame={restartCurrentBoard}
+          timerSeconds={timerSeconds}
+          isPaused={isPaused}
+          onTogglePause={() => {
+            if (!isGenerating) setIsPaused((prev) => !prev);
+          }}
+          mistakesCount={mistakesCount}
+          errorLimit={settings.errorLimit}
+          dailyStreak={stats.dailyStreak}
+          soundEnabled={settings.soundEnabled}
+          onToggleSound={() => {
+            const nextVal = !settings.soundEnabled;
+            const updated = { ...settings, soundEnabled: nextVal };
+            setSettings(updated);
+            saveSettings(updated);
+          }}
+          onOpenStats={() => setShowStatsModal(true)}
+          onOpenDailyModal={() => setShowDailyModal(true)}
+          onOpenSettings={() => setShowSettingsModal(true)}
           theme={theme}
         />
-      )}
-    </div>
+
+        {/* Main Play Area */}
+        <main className="w-full flex-1 flex flex-col items-center justify-center py-2 sm:py-3 space-y-3">
+          {/* Active Smart Hint Card */}
+          {activeHint && (
+            <div className="w-full px-2 sm:px-4">
+              <HintBar
+                hint={activeHint}
+                onApplyHint={handleApplyHint}
+                onDismiss={() => setActiveHint(null)}
+                theme={theme}
+              />
+            </div>
+          )}
+
+          {/* 9x9 Sudoku Grid */}
+          <SudokuGrid
+            board={board}
+            selectedCell={selectedCell}
+            onSelectCell={handleSelectCell}
+            highlightedNumber={highlightedNumber}
+            activeHint={activeHint}
+            theme={theme}
+            isPaused={isPaused}
+            isGenerating={isGenerating}
+            onResume={() => {
+              if (!isGenerating) setIsPaused(false);
+            }}
+            highlightPeers={settings.highlightPeers}
+            highlightMatchingNumbers={settings.highlightMatchingNumbers}
+            highlightDuplicates={settings.highlightDuplicates}
+          />
+
+          {/* Actions & Number Pad */}
+          <Controls
+            onNumberInput={handleNumberInput}
+            onErase={handleErase}
+            onUndo={handleUndo}
+            canUndo={history.length > 0}
+            isNoteMode={isNoteMode}
+            onToggleNoteMode={() => {
+              setIsNoteMode((prev) => !prev);
+              soundManager.playSelect();
+            }}
+            onTriggerHint={handleTriggerHint}
+            numberCounts={numberCounts}
+            selectedNumber={highlightedNumber}
+            theme={theme}
+          />
+        </main>
+
+        {/* Victory Celebration Modal */}
+        {showVictoryModal && (
+          <VictoryModal
+            difficulty={difficulty}
+            mode={mode}
+            dateKey={dateKey}
+            timeSeconds={timerSeconds}
+            bestTime={stats[difficulty].bestTime}
+            isNewBest={isNewBestTime}
+            mistakesCount={mistakesCount}
+            hintsUsed={hintsCount}
+            dailyStreak={stats.dailyStreak}
+            onPlayAnotherSameLevel={() => {
+              setShowVictoryModal(false);
+              startNewGame(difficulty, mode, dateKey);
+            }}
+            onPlayNextDifficulty={
+              difficulty === 'easy'
+                ? () => {
+                    setShowVictoryModal(false);
+                    startNewGame('medium', mode, dateKey);
+                  }
+                : difficulty === 'medium'
+                ? () => {
+                    setShowVictoryModal(false);
+                    startNewGame('hard', mode, dateKey);
+                  }
+                : undefined
+            }
+            onOpenDailyModal={() => {
+              setShowVictoryModal(false);
+              setShowDailyModal(true);
+            }}
+            onClose={() => setShowVictoryModal(false)}
+            theme={theme}
+          />
+        )}
+
+        {/* Daily Challenge Calendar Modal */}
+        {showDailyModal && (
+          <DailyChallengeModal
+            onSelectDailyGame={(selectedDate, selectedDiff) => {
+              setMode('daily');
+              setDateKey(selectedDate);
+              setDifficulty(selectedDiff);
+              startNewGame(selectedDiff, 'daily', selectedDate);
+            }}
+            onClose={() => setShowDailyModal(false)}
+            currentDateKey={dateKey}
+            dailyStreak={stats.dailyStreak}
+            theme={theme}
+          />
+        )}
+
+        {/* Statistics Modal */}
+        {showStatsModal && (
+          <StatsModal
+            stats={stats}
+            onClose={() => setShowStatsModal(false)}
+            theme={theme}
+          />
+        )}
+
+        {/* Settings Modal */}
+        {showSettingsModal && (
+          <SettingsModal
+            settings={settings}
+            onUpdateSettings={(newSettings) => {
+              setSettings(newSettings);
+              saveSettings(newSettings);
+            }}
+            onClose={() => setShowSettingsModal(false)}
+            theme={theme}
+          />
+        )}
+
+        {/* Game Over Modal (3-strikes limit) */}
+        {showGameOverModal && (
+          <GameOverModal
+            difficulty={difficulty}
+            onRestart={restartCurrentBoard}
+            onNewGame={() => startNewGame(difficulty, mode, dateKey)}
+            theme={theme}
+          />
+        )}
+      </div>
+    </I18nProvider>
   );
 }

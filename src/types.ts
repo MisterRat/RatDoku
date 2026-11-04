@@ -1,3 +1,5 @@
+import type { LanguageSetting } from './i18n/languages';
+
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type GameMode = 'classic' | 'daily';
 
@@ -42,6 +44,20 @@ export interface HintHighlight {
   label?: string;
 }
 
+export type HintMessageId =
+  | 'conflict'
+  | 'incorrect'
+  | 'keyCellBox'
+  | 'keyCellRow'
+  | 'keyCellCol'
+  | 'lockedRow'
+  | 'lockedCol'
+  | 'opportunity'
+  | 'singleRow'
+  | 'singleCol'
+  | 'singleBox'
+  | 'nakedSingle';
+
 export interface HintInfo {
   type:
     | 'naked_single'
@@ -58,6 +74,9 @@ export interface HintInfo {
   title: string;
   explanation: string;
   technique: string;
+  /** Language-neutral message ID + numbers, used to show the hint in the player's language. */
+  messageId: HintMessageId;
+  params: Record<string, number>;
   highlights: HintHighlight[];
 }
 
@@ -96,6 +115,8 @@ export interface GameSettings {
   highlightPeers: boolean;
   errorLimit: number | null; // null = unlimited, or 3
   theme: ThemeMode;
+  /** 'auto' follows the device language; otherwise a code from src/i18n/languages.ts. */
+  language: LanguageSetting;
 }
 
 export interface SavedGameState {

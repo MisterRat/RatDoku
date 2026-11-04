@@ -1,6 +1,7 @@
 import React from 'react';
 import { Undo2, Eraser, Pencil, Lightbulb, Check } from 'lucide-react';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface ControlsProps {
   onNumberInput: (num: number) => void;
@@ -27,6 +28,7 @@ export const Controls: React.FC<ControlsProps> = ({
   selectedNumber,
   theme,
 }) => {
+  const { t } = useI18n();
   return (
     <div id="sudoku-controls-container" className="w-full max-w-[490px] mx-auto space-y-3 px-1 sm:px-2">
       {/* Top Action Bar (Undo, Erase, Pencil Note, Hint) */}
@@ -42,10 +44,10 @@ export const Controls: React.FC<ControlsProps> = ({
               ? `${theme.controlBtnBg} cursor-pointer active:scale-95 shadow-sm`
               : 'bg-neutral-100 dark:bg-neutral-800/40 text-neutral-400 dark:text-neutral-600 border border-transparent cursor-not-allowed opacity-50'
           }`}
-          title="Undo last move (U or Ctrl+Z)"
+          title={t('controls.undoTitle')}
         >
           <Undo2 className="w-5 h-5 mb-1" />
-          <span>Undo</span>
+          <span>{t('controls.undo')}</span>
         </button>
 
         {/* Erase */}
@@ -54,10 +56,10 @@ export const Controls: React.FC<ControlsProps> = ({
           type="button"
           onClick={onErase}
           className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-medium transition-all cursor-pointer active:scale-95 shadow-sm ${theme.controlBtnBg}`}
-          title="Erase cell (Backspace/Delete)"
+          title={t('controls.eraseTitle')}
         >
           <Eraser className="w-5 h-5 mb-1" />
-          <span>Erase</span>
+          <span>{t('controls.erase')}</span>
         </button>
 
         {/* Pencil/Notes Mode */}
@@ -68,11 +70,11 @@ export const Controls: React.FC<ControlsProps> = ({
           className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-medium transition-all cursor-pointer active:scale-95 shadow-sm ${
             isNoteMode ? theme.controlBtnActiveBg : theme.controlBtnBg
           }`}
-          title="Toggle Pencil Notes mode (N)"
+          title={t('controls.notesTitle')}
         >
           <Pencil className="w-5 h-5 mb-1" />
           <div className="flex items-center gap-1">
-            <span>Notes</span>
+            <span>{t('controls.notes')}</span>
             <span
               className={`text-[9px] font-bold uppercase px-1 py-0.2 rounded ${
                 isNoteMode
@@ -80,7 +82,7 @@ export const Controls: React.FC<ControlsProps> = ({
                   : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300'
               }`}
             >
-              {isNoteMode ? 'ON' : 'OFF'}
+              {isNoteMode ? t('controls.on') : t('controls.off')}
             </span>
           </div>
         </button>
@@ -91,10 +93,10 @@ export const Controls: React.FC<ControlsProps> = ({
           type="button"
           onClick={onTriggerHint}
           className={`flex flex-col items-center justify-center py-2.5 px-2 rounded-xl text-xs font-medium transition-all cursor-pointer active:scale-95 shadow-sm ${theme.controlBtnBg} hover:border-amber-400 group`}
-          title="Get a smart educational hint (H)"
+          title={t('controls.hintTitle')}
         >
           <Lightbulb className="w-5 h-5 mb-1 text-amber-500 group-hover:scale-110 transition-transform" />
-          <span className="group-hover:text-amber-600 dark:group-hover:text-amber-400">Hint</span>
+          <span className="group-hover:text-amber-600 dark:group-hover:text-amber-400">{t('controls.hint')}</span>
         </button>
       </div>
 
@@ -118,7 +120,7 @@ export const Controls: React.FC<ControlsProps> = ({
                   ? 'bg-blue-600 text-white dark:bg-sky-500 shadow-md ring-2 ring-blue-400'
                   : `${theme.controlBtnBg}`
               }`}
-              aria-label={`Enter number ${num} (${9 - count} remaining)`}
+              aria-label={t('controls.numberLabel', { num, left: 9 - count })}
             >
               <span>{num}</span>
               <span className="text-[10px] font-sans font-normal leading-none mt-0.5 opacity-70">

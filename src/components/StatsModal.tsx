@@ -3,6 +3,7 @@ import { X, BarChart3, Trophy, Flame, Clock, Award } from 'lucide-react';
 import { Difficulty, OverallStats } from '../types';
 import { formatTime } from '../utils/storage';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface StatsModalProps {
   stats: OverallStats;
@@ -11,6 +12,7 @@ interface StatsModalProps {
 }
 
 export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme }) => {
+  const { t, difficulty: diffName } = useI18n();
   const [activeTab, setActiveTab] = useState<Difficulty>('medium');
   const currentDiffStats = stats[activeTab];
 
@@ -35,8 +37,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme })
               <BarChart3 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold tracking-tight">Performance Statistics</h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">Track your solving speed and accuracy</p>
+              <h3 className="text-lg font-bold tracking-tight">{t('stats.title')}</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{t('stats.subtitle')}</p>
             </div>
           </div>
           <button
@@ -44,7 +46,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme })
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer"
-            aria-label="Close modal"
+            aria-label={t('common.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -63,7 +65,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme })
                   : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-white'
               }`}
             >
-              {d}
+              {diffName(d)}
             </button>
           ))}
         </div>
@@ -73,51 +75,53 @@ export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme })
           <div className={`p-3.5 rounded-xl ${theme.subtleBg} border ${theme.borderColor}`}>
             <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
               <Trophy className="w-3.5 h-3.5 text-amber-500" />
-              <span>Games Won</span>
+              <span>{t('stats.gamesWon')}</span>
             </div>
             <div className="font-mono-num text-2xl font-bold text-neutral-900 dark:text-white">
               {currentDiffStats.gamesWon}
             </div>
             <div className="text-[10px] text-neutral-400 mt-0.5">
-              {currentDiffStats.gamesPlayed} games played ({winRate}%)
+              {t('stats.gamesPlayed', { played: currentDiffStats.gamesPlayed, rate: winRate })}
             </div>
           </div>
 
           <div className={`p-3.5 rounded-xl ${theme.subtleBg} border ${theme.borderColor}`}>
             <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
               <Clock className="w-3.5 h-3.5 text-blue-500" />
-              <span>Best Time</span>
+              <span>{t('stats.bestTime')}</span>
             </div>
             <div className="font-mono-num text-2xl font-bold text-neutral-900 dark:text-white">
               {currentDiffStats.bestTime !== null ? formatTime(currentDiffStats.bestTime) : '--:--'}
             </div>
             <div className="text-[10px] text-neutral-400 mt-0.5">
-              Avg: {currentDiffStats.averageTime !== null ? formatTime(currentDiffStats.averageTime) : '--:--'}
+              {t('stats.average', {
+                time: currentDiffStats.averageTime !== null ? formatTime(currentDiffStats.averageTime) : '--:--',
+              })}
             </div>
           </div>
 
           <div className={`p-3.5 rounded-xl ${theme.subtleBg} border ${theme.borderColor}`}>
             <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
               <Flame className="w-3.5 h-3.5 text-orange-500" />
-              <span>Current Streak</span>
+              <span>{t('stats.currentStreak')}</span>
             </div>
             <div className="font-mono-num text-2xl font-bold text-neutral-900 dark:text-white">
               {currentDiffStats.currentStreak}
             </div>
             <div className="text-[10px] text-neutral-400 mt-0.5">
-              Best streak: {currentDiffStats.bestStreak}
+              {t('stats.bestStreak', { count: currentDiffStats.bestStreak })}
             </div>
           </div>
 
           <div className={`p-3.5 rounded-xl ${theme.subtleBg} border ${theme.borderColor}`}>
             <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
               <Award className="w-3.5 h-3.5 text-purple-500" />
-              <span>Daily Streak</span>
+              <span>{t('stats.dailyStreak')}</span>
             </div>
             <div className="font-mono-num text-2xl font-bold text-neutral-900 dark:text-white">
               {stats.dailyStreak}
             </div>
-            <div className="text-[10px] text-neutral-400 mt-0.5">Consecutive days active</div>
+            <div className="text-[10px] text-neutral-400 mt-0.5">{t('stats.consecutive')}</div>
           </div>
         </div>
 
@@ -128,7 +132,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({ stats, onClose, theme })
           onClick={onClose}
           className={`w-full py-2.5 rounded-xl text-xs font-semibold ${theme.accentBtn} cursor-pointer shadow-xs active:scale-95 transition-all`}
         >
-          Done
+          {t('stats.done')}
         </button>
       </div>
     </div>

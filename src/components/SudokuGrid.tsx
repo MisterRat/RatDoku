@@ -1,6 +1,7 @@
 import React from 'react';
 import { CellData, HintInfo } from '../types';
 import { ThemeStyles } from '../utils/theme';
+import { useI18n } from '../i18n';
 
 interface SudokuGridProps {
   board: CellData[][];
@@ -31,6 +32,7 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
   highlightMatchingNumbers,
   highlightDuplicates,
 }) => {
+  const { t } = useI18n();
   // Check if a cell is a peer of the selected cell (same row, col, or 3x3 box)
   const isPeerOfSelected = (r: number, c: number) => {
     if (!selectedCell || !highlightPeers) return false;
@@ -118,7 +120,7 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
                 } ${
                   isSelected ? 'z-10 ring-2 ring-blue-500/80 dark:ring-sky-400' : ''
                 }`}
-                aria-label={`Row ${rIdx + 1}, Column ${cIdx + 1}, Value ${cell.value || 'Empty'}`}
+                aria-label={t('grid.cellLabel', { row: rIdx + 1, col: cIdx + 1, value: cell.value || t('grid.empty') })}
               >
                 {cell.value !== 0 ? (
                   // Main filled number
@@ -168,7 +170,7 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
           className="absolute inset-0 m-1 sm:m-2 bg-neutral-900/70 backdrop-blur-md rounded-xl flex flex-col items-center justify-center text-white z-40"
         >
           <div className="w-10 h-10 rounded-full border-4 border-white/20 border-t-white animate-spin" />
-          <p className="text-sm text-neutral-200 mt-3">Building your puzzle…</p>
+          <p className="text-sm text-neutral-200 mt-3">{t('grid.building')}</p>
         </div>
       )}
 
@@ -183,8 +185,8 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
               ⏸
             </div>
             <div>
-              <h3 className="text-lg font-semibold tracking-tight">Game Paused</h3>
-              <p className="text-sm text-neutral-300 mt-1">Timer is paused. Tap resume when ready.</p>
+              <h3 className="text-lg font-semibold tracking-tight">{t('grid.paused')}</h3>
+              <p className="text-sm text-neutral-300 mt-1">{t('grid.pausedText')}</p>
             </div>
             <button
               id="resume-game-button"
@@ -192,7 +194,7 @@ export const SudokuGrid: React.FC<SudokuGridProps> = ({
               onClick={onResume}
               className="px-6 py-2.5 rounded-lg bg-white text-neutral-950 font-medium text-sm hover:bg-neutral-100 active:scale-95 transition-all shadow-md cursor-pointer"
             >
-              Resume Game
+              {t('header.resume')}
             </button>
           </div>
         </div>

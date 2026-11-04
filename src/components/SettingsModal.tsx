@@ -1,7 +1,8 @@
 import React from 'react';
 import { APP_VERSION } from '../version';
-import { X, Volume2, Sparkles, Eye, ShieldAlert, Palette, Check } from 'lucide-react';
+import { X, Palette, Check, Languages } from 'lucide-react';
 import { GameSettings, ThemeMode } from '../types';
+import { LANGUAGES, detectDeviceLanguage, getLanguage, useI18n, type LanguageSetting, type MessageKey } from '../i18n';
 import { THEMES, ThemeStyles } from '../utils/theme';
 
 interface SettingsModalProps {
@@ -17,6 +18,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClose,
   theme,
 }) => {
+  const { t } = useI18n();
+  const currentLanguage: LanguageSetting = settings.language ?? 'auto';
+  const deviceLanguageName = getLanguage(detectDeviceLanguage()).nativeName;
+  const languageOptions: { value: LanguageSetting; label: string }[] = [
+    { value: 'auto', label: t('settings.languageAuto', { name: deviceLanguageName }) },
+    ...LANGUAGES.map((l) => ({ value: l.code as LanguageSetting, label: l.nativeName })),
+  ];
+
   const toggleKey = (key: keyof GameSettings) => {
     onUpdateSettings({
       ...settings,
@@ -54,8 +63,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Palette className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold tracking-tight">Settings & Preferences</h3>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">Customize your playing experience</p>
+              <h3 className="text-lg font-bold tracking-tight">{t('settings.title')}</h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">{t('settings.subtitle')}</p>
             </div>
           </div>
           <button
@@ -63,16 +72,45 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer"
-            aria-label="Close modal"
+            aria-label={t('common.close')}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Language Selector */}
+        <div className="space-y-2.5">
+          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            <Languages className="w-3.5 h-3.5" />
+            {t('settings.language')}
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {languageOptions.map((opt) => {
+              const isSelected = currentLanguage === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  id={`language-option-${opt.value}`}
+                  type="button"
+                  onClick={() => onUpdateSettings({ ...settings, language: opt.value })}
+                  className={`p-3 rounded-xl border flex items-center justify-between text-xs font-medium cursor-pointer transition-all ${
+                    isSelected
+                      ? 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/40 dark:bg-sky-950/30'
+                      : 'border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
+                  }`}
+                >
+                  <span>{opt.label}</span>
+                  {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Themes Selector */}
         <div className="space-y-2.5">
           <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            Theme & Appearance
+            {t('settings.theme')}
           </label>
           <div className="grid grid-cols-2 gap-2">
             {(Object.keys(THEMES) as ThemeMode[]).map((themeKey) => {
@@ -103,7 +141,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           : 'bg-[#0f1715]'
                       }`}
                     />
-                    <span>{th.name}</span>
+                    <span>{t(`theme.${themeKey}` as MessageKey)}</span>
                   </div>
                   {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />}
                 </button>
@@ -115,14 +153,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Gameplay Assists & Visual Helpers */}
         <div className="space-y-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
           <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
-            Assists & Visual Aids
+            {t('settings.assists')}
           </label>
 
           {/* Sound FX */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">Sound Effects</span>
-              <p className="text-[11px] text-neutral-500">Subtle audio feedback for taps and completions</p>
+              <span className="text-xs font-semibold">{t('settings.sound')}</span>
+              <p className="text-[11px] text-neutral-500">{t('settings.soundDesc')}</p>
             </div>
             <input
               type="checkbox"
@@ -135,8 +173,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Auto-remove notes */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">Auto-Remove Notes</span>
-              <p className="text-[11px] text-neutral-500">Automatically clear candidate pencil marks on row/col/box</p>
+              <span className="text-xs font-semibold">{t('settings.autoNotes')}</span>
+              <p className="text-[11px] text-neutral-500">{t('settings.autoNotesDesc')}</p>
             </div>
             <input
               type="checkbox"
@@ -149,8 +187,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Highlight matching numbers */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">Highlight Matching Numbers</span>
-              <p className="text-[11px] text-neutral-500">Highlight all identical numbers across the grid</p>
+              <span className="text-xs font-semibold">{t('settings.matching')}</span>
+              <p className="text-[11px] text-neutral-500">{t('settings.matchingDesc')}</p>
             </div>
             <input
               type="checkbox"
@@ -163,8 +201,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Highlight Peers */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">Highlight Row, Column & Box</span>
-              <p className="text-[11px] text-neutral-500">Shade the crosshair peers of the selected cell</p>
+              <span className="text-xs font-semibold">{t('settings.peers')}</span>
+              <p className="text-[11px] text-neutral-500">{t('settings.peersDesc')}</p>
             </div>
             <input
               type="checkbox"
@@ -177,8 +215,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Highlight Duplicates */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">Check Conflicts & Duplicates</span>
-              <p className="text-[11px] text-neutral-500">Flag invalid duplicate numbers instantly</p>
+              <span className="text-xs font-semibold">{t('settings.conflicts')}</span>
+              <p className="text-[11px] text-neutral-500">{t('settings.conflictsDesc')}</p>
             </div>
             <input
               type="checkbox"
@@ -191,9 +229,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* 3-Strikes Mistake Limit */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs font-semibold">3-Strikes Mistake Mode</span>
+              <span className="text-xs font-semibold">{t('settings.strikes')}</span>
               <p className="text-[11px] text-neutral-500">
-                {settings.errorLimit === 3 ? 'Game over on 3 mistakes' : 'Relaxed mode (unlimited mistakes)'}
+                {settings.errorLimit === 3 ? t('settings.strikesOn') : t('settings.strikesOff')}
               </p>
             </div>
             <button
@@ -205,7 +243,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   : 'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300'
               }`}
             >
-              {settings.errorLimit === 3 ? '3 Strikes' : 'Relaxed'}
+              {settings.errorLimit === 3 ? t('settings.strikesBtnOn') : t('settings.strikesBtnOff')}
             </button>
           </div>
         </div>
@@ -217,11 +255,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           onClick={onClose}
           className={`w-full py-2.5 rounded-xl text-xs font-semibold ${theme.accentBtn} cursor-pointer shadow-xs active:scale-95 transition-all`}
         >
-          Save & Close
+          {t('settings.save')}
         </button>
 
         <p className="text-center text-[10px] text-neutral-400 dark:text-neutral-500 font-medium">
-          RatDoku • ver {APP_VERSION} by MrRat.com
+          {t('settings.footer', { version: APP_VERSION })}
         </p>
       </div>
     </div>
