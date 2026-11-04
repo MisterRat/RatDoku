@@ -17,7 +17,7 @@ by [MrRat Gaming](https://github.mrrat.org/) &nbsp;·&nbsp; [Discord](https://di
 - **Progressive Web App (PWA)**: Installable on iOS, Android, macOS, Windows, and Linux with full offline gameplay support.
 - **Game Modes**: Classic mode (Easy, Medium, Hard) and Daily Challenges with calendar history and streak tracking.
 - **Smart Hint System**: Step-by-step logical hints (Naked Singles, Hidden Singles, Block Intersections, Naked Pairs, and more) with visual explanations.
-- **Languages**: English, Simplified Chinese (中文) and Mandarin in Pīnyīn, chosen under Settings. Chinese devices start in 中文 automatically.
+- **Languages**: English, Español, Simplified Chinese (中文) and Mandarin in Pīnyīn, chosen from the dropdown under Settings. By default the game follows the device language (Spanish phones get Español, Chinese phones get 中文).
 - **Customizable Themes**: Elegant Dark (obsidian), Minimal Light, Warm Paper, Dark Slate, and Nordic Forest.
 - **Rich Gameplay Controls**: Undo, candidate pencil notes, auto-error checking, matching number highlights, peer highlights, sound effects, and timer controls.
 - **100% Client-Side & Offline-First**: No external API or cloud dependency required. All game state and daily puzzles are generated and cached locally in the browser.
@@ -101,7 +101,7 @@ All on-screen text lives in `src/i18n/`. To add a language:
 1. Copy `src/i18n/en.ts` to a new file (e.g. `es.ts`), translate the values, and keep the keys and `{placeholders}` as they are. Type it as `Messages`; `npm run lint` then lists any text you missed.
 2. Add an entry to `LANGUAGES` in `src/i18n/languages.ts`: its code, its name in its own language, and which device languages should pick it automatically.
 
-It then appears in Settings → Language.
+It then appears in the Settings → Language dropdown.
 
 ---
 

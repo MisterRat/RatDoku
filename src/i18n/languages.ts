@@ -1,12 +1,13 @@
 import { en, type Messages } from './en';
+import { es } from './es';
 import { zh } from './zh';
 import { pinyin } from './pinyin';
 
 /**
  * Every language the game can show.
  *
- * To add a language:
- *   1. Copy en.ts to e.g. es.ts and translate the values (keep the keys and {placeholders}).
+ * To add a language (it then appears in the Settings dropdown):
+ *   1. Copy en.ts to e.g. fr.ts and translate the values (keep the keys and {placeholders}).
  *      Type it as `Messages` so the type-check flags any missing text.
  *   2. Add an entry below. `matches` decides which device languages pick it automatically.
  */
@@ -18,6 +19,14 @@ export const LANGUAGES = [
     intlLocale: 'en-US',
     messages: en as Messages,
     matches: (tag: string) => tag.startsWith('en'),
+  },
+  {
+    code: 'es',
+    nativeName: 'Español',
+    htmlLang: 'es',
+    intlLocale: 'es',
+    messages: es,
+    matches: (tag: string) => tag.startsWith('es'),
   },
   {
     code: 'zh',

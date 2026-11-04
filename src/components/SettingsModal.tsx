@@ -1,6 +1,6 @@
 import React from 'react';
 import { APP_VERSION } from '../version';
-import { X, Palette, Check, Languages } from 'lucide-react';
+import { X, Palette, Check, Languages, ChevronDown } from 'lucide-react';
 import { GameSettings, ThemeMode } from '../types';
 import { LANGUAGES, detectDeviceLanguage, getLanguage, useI18n, type LanguageSetting, type MessageKey } from '../i18n';
 import { THEMES, ThemeStyles } from '../utils/theme';
@@ -80,30 +80,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Language Selector */}
         <div className="space-y-2.5">
-          <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+          <label
+            htmlFor="language-select"
+            className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+          >
             <Languages className="w-3.5 h-3.5" />
             {t('settings.language')}
           </label>
-          <div className="grid grid-cols-2 gap-2">
-            {languageOptions.map((opt) => {
-              const isSelected = currentLanguage === opt.value;
-              return (
-                <button
-                  key={opt.value}
-                  id={`language-option-${opt.value}`}
-                  type="button"
-                  onClick={() => onUpdateSettings({ ...settings, language: opt.value })}
-                  className={`p-3 rounded-xl border flex items-center justify-between text-xs font-medium cursor-pointer transition-all ${
-                    isSelected
-                      ? 'border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/40 dark:bg-sky-950/30'
-                      : 'border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40'
-                  }`}
-                >
-                  <span>{opt.label}</span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-blue-600 dark:text-sky-400" />}
-                </button>
-              );
-            })}
+          <div className="relative">
+            <select
+              id="language-select"
+              value={currentLanguage}
+              onChange={(e) => onUpdateSettings({ ...settings, language: e.target.value as LanguageSetting })}
+              className={`w-full appearance-none p-3 pr-9 rounded-xl border border-neutral-200 dark:border-neutral-800 ${theme.cardBg} text-xs font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40`}
+            >
+              {languageOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
           </div>
         </div>
 
