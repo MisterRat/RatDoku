@@ -2,6 +2,8 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+// Start listening for the browser's "can install" event right away (used by Settings → Install App).
+import './utils/install';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

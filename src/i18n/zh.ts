@@ -170,6 +170,9 @@ export const zh: Messages = {
   'settings.strikesOff': '轻松模式（不限错误次数）',
   'settings.strikesBtnOn': '三次失误',
   'settings.strikesBtnOff': '轻松',
+  'settings.install': '安装应用',
+  'settings.installDesc': '把 RatDoku 添加到主屏幕或桌面，离线也能玩',
+  'settings.installIos': '在 iPhone 或 iPad 上：点按“分享”按钮，然后选择“添加到主屏幕”。',
   'settings.save': '保存并关闭',
   'settings.footer': 'RatDoku • 版本 {version} · MrRat.com 出品',
 };

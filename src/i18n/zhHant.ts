@@ -147,6 +147,9 @@ export const zhHant: Messages = {
   'settings.strikesOff': '輕鬆模式（不限錯誤次數）',
   'settings.strikesBtnOn': '三次失誤',
   'settings.strikesBtnOff': '輕鬆',
+  'settings.install': '安裝 App',
+  'settings.installDesc': '把 RatDoku 加入主畫面或桌面，離線也能玩',
+  'settings.installIos': '在 iPhone 或 iPad 上：點一下「分享」按鈕，再選擇「加入主畫面」。',
   'settings.save': '儲存並關閉',
   'settings.footer': 'RatDoku • 版本 {version} · MrRat.com 出品',
 };

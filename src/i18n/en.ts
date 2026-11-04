@@ -175,6 +175,9 @@ export const en = {
   'settings.strikesOff': 'Relaxed mode (unlimited mistakes)',
   'settings.strikesBtnOn': '3 Strikes',
   'settings.strikesBtnOff': 'Relaxed',
+  'settings.install': 'Install App',
+  'settings.installDesc': 'Add RatDoku to your home screen or desktop and play offline',
+  'settings.installIos': 'To install on iPhone or iPad, tap the Share button, then "Add to Home Screen".',
   'settings.save': 'Save & Close',
   'settings.footer': 'RatDoku • ver {version} by MrRat.com',
 };

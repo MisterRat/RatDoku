@@ -170,6 +170,9 @@ export const ja: Messages = {
   'settings.strikesOff': 'のんびりモード（ミス無制限）',
   'settings.strikesBtnOn': '3ミス',
   'settings.strikesBtnOff': 'のんびり',
+  'settings.install': 'アプリをインストール',
+  'settings.installDesc': 'RatDoku をホーム画面やデスクトップに追加して、オフラインでも遊べます',
+  'settings.installIos': 'iPhone・iPad では、共有ボタンをタップして「ホーム画面に追加」を選んでください。',
   'settings.save': '保存して閉じる',
   'settings.footer': 'RatDoku • バージョン {version} · MrRat.com',
 };
