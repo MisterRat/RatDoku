@@ -9,8 +9,9 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>,
 );
 
-// Register Progressive Web App (PWA) Service Worker
-if ('serviceWorker' in navigator && typeof window !== 'undefined') {
+// Register Progressive Web App (PWA) Service Worker.
+// Skipped in the standalone RatDoku.html, which is meant to be saved and opened as a single file.
+if (import.meta.env.MODE !== 'singlefile' && 'serviceWorker' in navigator && typeof window !== 'undefined') {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register(`${import.meta.env.BASE_URL}sw.js`)
