@@ -1,6 +1,11 @@
 import { en, type Messages } from './en';
 import { es } from './es';
+import { fr } from './fr';
+import { de } from './de';
+import { ja } from './ja';
+import { ko } from './ko';
 import { zh } from './zh';
+import { zhHant } from './zhHant';
 import { pinyin } from './pinyin';
 
 /**
@@ -11,6 +16,11 @@ import { pinyin } from './pinyin';
  *      Type it as `Messages` so the type-check flags any missing text.
  *   2. Add an entry below. `matches` decides which device languages pick it automatically.
  */
+/** Taiwan, Hong Kong and Macau use Traditional characters; so does any tag marked "Hant". */
+function isTraditionalChinese(tag: string): boolean {
+  return /^zh-(hant|tw|hk|mo)\b/.test(tag);
+}
+
 export const LANGUAGES = [
   {
     code: 'en',
@@ -29,12 +39,52 @@ export const LANGUAGES = [
     matches: (tag: string) => tag.startsWith('es'),
   },
   {
+    code: 'fr',
+    nativeName: 'Français',
+    htmlLang: 'fr',
+    intlLocale: 'fr',
+    messages: fr,
+    matches: (tag: string) => tag.startsWith('fr'),
+  },
+  {
+    code: 'de',
+    nativeName: 'Deutsch',
+    htmlLang: 'de',
+    intlLocale: 'de',
+    messages: de,
+    matches: (tag: string) => tag.startsWith('de'),
+  },
+  {
+    code: 'ja',
+    nativeName: '日本語',
+    htmlLang: 'ja',
+    intlLocale: 'ja-JP',
+    messages: ja,
+    matches: (tag: string) => tag.startsWith('ja'),
+  },
+  {
+    code: 'ko',
+    nativeName: '한국어',
+    htmlLang: 'ko',
+    intlLocale: 'ko-KR',
+    messages: ko,
+    matches: (tag: string) => tag.startsWith('ko'),
+  },
+  {
     code: 'zh',
-    nativeName: '中文',
+    nativeName: '简体中文',
     htmlLang: 'zh-Hans',
     intlLocale: 'zh-CN',
     messages: zh,
-    matches: (tag: string) => tag.startsWith('zh'),
+    matches: (tag: string) => tag.startsWith('zh') && !isTraditionalChinese(tag),
+  },
+  {
+    code: 'zh-Hant',
+    nativeName: '繁體中文',
+    htmlLang: 'zh-Hant',
+    intlLocale: 'zh-TW',
+    messages: zhHant,
+    matches: isTraditionalChinese,
   },
   {
     code: 'pinyin',
@@ -43,7 +93,7 @@ export const LANGUAGES = [
     // No Intl locale writes dates in Pinyin, so dates use the 'date.*' messages instead.
     intlLocale: undefined,
     messages: pinyin,
-    // Never chosen automatically; Chinese devices get characters (zh).
+    // Never chosen automatically; Chinese devices get characters (zh / zh-Hant).
     matches: () => false,
   },
 ] as const satisfies readonly {

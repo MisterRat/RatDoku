@@ -3,7 +3,7 @@ name: Build and Publish RatDoku Container Image
 on:
   push:
     branches: [ "main", "master" ]
-    tags: [ 'v*.*.*' ]
+    tags: [ 'v*.*' ]
   pull_request:
     branches: [ "main", "master" ]
   workflow_dispatch:
@@ -72,7 +72,7 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
-            type=semver,pattern={{version}}
+            type=match,pattern=v(\d+\.\d+),group=1
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
